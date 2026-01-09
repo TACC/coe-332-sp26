@@ -295,7 +295,7 @@ the materials. https://tacc-learn.slack.com/
 **Important Dates:**
 
 Please refer to UT's academic calendar for important dates:
-https://registrar.utexas.edu/calendars/24-25 
+https://registrar.utexas.edu/calendars/25-26 
 
 
 **Disability and Access (D&A):**
@@ -494,9 +494,8 @@ Additional Help
 
 Our main goal for this class is your success. Please contact us if you need help:
 
-* Joe Allen, wallen@tacc.utexas.edu
-* Charlie Dey, charlie@tacc.utexas.edu
 * Joe Stubbs, jstubbs@tacc.utexas.edu
+* Charlie Dey, charlie@tacc.utexas.edu
 * Nathan Freeman, nfreeman@tacc.utexas.edu
 
 
