@@ -284,7 +284,7 @@ your own VM.
 .. code-block:: console
    :emphasize-lines: 1,19,21
 
-   [student-login]$ ssh coe332-vm
+   [coe332-2026]$ ssh coe332-vm
    
     Welcome to Ubuntu 24.04.3 LTS (GNU/Linux 6.8.0-90-generic x86_64)
 

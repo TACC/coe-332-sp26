@@ -13,3 +13,4 @@ will be necessary for the rest of this course.
 
    class_intro
    tacc_onboarding
+   vscode
