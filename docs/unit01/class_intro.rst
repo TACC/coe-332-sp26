@@ -205,7 +205,9 @@ webpage.
 
 The entire course will be computer based. The instructors will provide a remote
 server for students to work on. Students are expected to have access to a
-personal / laptop computer with a web browser and a terminal (or SSH client).
+personal / laptop computer with a web browser and a terminal (or SSH client) 
+and VSCode installed. We will provide instructions on installing VSCode and 
+configuring the necessary plugins. 
 
 
 **Text:**
@@ -227,15 +229,15 @@ instructors.
 
 **Class Schedule (approximate, subject to change):**
 
-* Week 1: Onboarding, Linux and Python Review, Version Control
-* Week 2: Working with JSON, CSV, XML, YAML
+* Week 1: Onboarding: Student VM and VSCode (Supplement: Linux, Python, and Version Control Review) 
+* Week 2: Working with JSON and PyDantic DataModels (Supplement: CSV, XML, YAML)
 * Week 3: Code Organization, Documentation, Exception Handling, Unit Testing
 * Week 4: Concepts in Software Design, Intro to Containerization and Automation
 * Week 5: Advanced Containers, Docker Compose
-* Week 6: REST APIs, Intro to Flask
-* Week 7: Advanced Flask
+* Week 6: REST APIs, Intro to FastAPI
+* Week 7: Advanced FastAPI
 * Week 8: Databases, Persistence
-* Week 9: Asynchronous Programming, Concurrency, **Midterm Project Due**
+* Week 9: Asynchronous Programming, Concurrency, **Midterm Exam Thursday, March 12th**
 * Week of March 17 - Spring Break
 * Week 10: Messaging Systems, Queues
 * Week 11: Virtualization: Container Orchestration and Kubernetes
@@ -251,9 +253,11 @@ Grades for the course will be based on the following:
 
 * 50% Homework - Approximately 8-10 coding / software design assignments to be
   submitted via GitHub.
-* 20% Midterm - A midterm design project will include concepts from the first
-  half of the semester and build on the first 4-5 homework assignments. A
-  written component will also be required.
+* 20% Midterm - A midterm exam will be given **in-class Thursday, March 12th** 
+  covering concepts from the first half of the semester and build on the first 4-5 homework assignments. 
+  All students are required to take the exam at the scheduled time. If you have a conflict with this time, 
+  please discuss with us immediately. Unfortunately, we will not be able to offer a makeup exam.
+  The exam will be "closed-book" and no devices or use of the internet and/or AI will be allowed. 
 * 30% Final Project - Students will form groups to work on a final class project
   consisting of a distributed, web-accessible, cloud system to interact with a
   time series data set. The project will draw from and build upon work done
