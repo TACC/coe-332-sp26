@@ -14,3 +14,4 @@ provide a web-accessible interface to their system.
    :caption: Course Schedule:
 
    unit01/overview
+   unit02/overview
