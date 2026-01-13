@@ -22,7 +22,7 @@ Class Introduction
 **Location:** ECJ 1.314 A (in person)
 
 
-**Teaching Assistant:** TBD 
+**Teaching Assistant:** Lukas Taus (l.taus@utexas.edu) 
 
 
 **Important Links:**
@@ -49,13 +49,12 @@ Computational Engineering 322 with a grade of at least C-.
 This course assumes familiarity with the Python programming language and strong
 working knowledge of basic, high-level language programming concepts including
 data structures, conditionals, loops, and functions. We also assume a basic,
-working knowledge of the Linux command line. We will briefly review programming
-concepts in Linux and Python during the first week of class, the first homework
+working knowledge of the Linux command line. The first homework
 assignment will be based on these topics, and we will make every effort to help
 students who are less familiar with these concepts. Ultimately, each student is
 expected to and responsible for mastering this material. This is not an
-introductory programming class and we will not have time to give a comprehensive
-treatment of all of these topics.
+introductory programming class and we will not have time to cover these topics or 
+help you debug your code. 
 
 
 **Knowledge, Skills, and Abilities Students Gain from this Course (Learning Outcomes):**
