@@ -279,7 +279,8 @@ Using your SSH client, please try to log in to the class login server, ``coe332-
 After logging in to the class server, try logging in to your individual virtual
 machine (VM), hosted on Jetstream. The login command is the same for everybody.
 It should not ask you for your username or password, but it will take you to
-your own VM.
+your own VM. (**Note:** This will only work once we have created your VM, which will 
+not happen until after we receive your TACC account information.)
 
 .. code-block:: console
    :emphasize-lines: 1,19,21
