@@ -15,3 +15,4 @@ provide a web-accessible interface to their system.
 
    unit01/overview
    unit02/overview
+   unit03/overview

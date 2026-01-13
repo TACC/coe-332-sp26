@@ -241,13 +241,13 @@ To create a new project, simply issue:
 
     [coe332-vm]$ uv init <project_name>
 
-For example, 
+Run the following the home directory of your VM, 
 
 .. code-block:: console
 
-    [coe332-vm]$ uv init coe-example
+    [coe332-vm]$ uv init coe-in-class
 
-This creates a new directory, ``coe-example``, in the current working directory that includes the following 
+This creates a new directory, ``coe-in-class``, in the current working directory that includes the following 
 files: 
 
 * README.md
@@ -282,7 +282,7 @@ and ``uvicorn`` to your project.
 
 .. code-block:: console
 
-    [coe332-vm]$ cd coe-example
+    [coe332-vm]$ cd coe-in-class
     
     # add a package
     [coe332-vm]$ uv add fastapi
@@ -293,7 +293,7 @@ and ``uvicorn`` to your project.
     # check the results
     [coe332-vm]$ cat pyproject.toml
     [project]
-    name = "coe-example"
+    name = "coe-in-class"
     version = "0.1.0"
     description = "Add your description here"
     readme = "README.md"
