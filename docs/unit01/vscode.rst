@@ -241,23 +241,46 @@ To create a new project, simply issue:
 
     [coe332-vm]$ uv init <project_name>
 
-For example, 
+For example, let's create an in itial ``uv`` project to hold our the work we do in class:
 
 .. code-block:: console
 
-    [coe332-vm]$ uv init coe-example
+    [coe332-vm]$ uv init class-work
 
-This creates a new directory, ``coe-example``, in the current working directory that includes the following 
+This creates a new directory, ``class-work``, in the current working directory that includes the following 
 files: 
 
 * README.md
 * main.py
 * pyproject.toml
 
-The ``pyproject.toml`` file records specific metadata about the Python version and packages that your project depends on. 
-You can think of the ``pyproject.toml`` file as providing a minimum specification of the environment required to execute your 
-code correctly. We'll revisit this file and the associated ``uv.lock`` file (which gets created later, 
+The ``pyproject.toml`` file records specific metadata about the Python version and packages that 
+your project depends on. You can think of the ``pyproject.toml`` file as providing a minimum 
+specification of the environment required to execute your code correctly. We'll revisit this file 
+and the associated ``uv.lock`` file (which gets created later, 
 when you add packages to a project) later in the semester. 
+
+A Word on Python Packages
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Python programming language includes many modules and packages for common programming 
+tasks as part of the **standard library**. These packages come with Python itself --- once you 
+have downloaded and installed Python, there is nothing additional you need to do to use the 
+package: simply import it into your script and you can being using it. Examples include the 
+``json`` library, for working with JSON data (which we will use in the next class), the 
+``os`` package, for working with files and directories, and the ``re`` package for leveraging 
+regular expressions. 
+
+At the same time, there are many more **third-party** packages that you can install to add 
+additional functionality to your programs. For example, the ``requests`` package provides an 
+excellent API for making HTTP requests, and the ``fastapi`` package provides a framework for 
+developing HTTP services. Unlike packages from the standard library, third-party 
+packages must be downloaded and installed before they can be used. 
+
+Many of these packages are managed through the Python 
+Pakcage Index, abbreviated PyPI, and pronounced "pi-pi". Packages come in multiple different 
+versions and with their own dependencies, so managing the installation of the third-party 
+packages a certin program or code base depends on can be a challenging task. 
 
 Adding Dependencies 
 ^^^^^^^^^^^^^^^^^^^^
@@ -282,7 +305,7 @@ and ``uvicorn`` to your project.
 
 .. code-block:: console
 
-    [coe332-vm]$ cd coe-example
+    [coe332-vm]$ cd class-work
     
     # add a package
     [coe332-vm]$ uv add fastapi
@@ -293,7 +316,7 @@ and ``uvicorn`` to your project.
     # check the results
     [coe332-vm]$ cat pyproject.toml
     [project]
-    name = "coe-example"
+    name = "class-work"
     version = "0.1.0"
     description = "Add your description here"
     readme = "README.md"
