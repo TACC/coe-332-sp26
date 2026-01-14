@@ -418,7 +418,7 @@ With the Python extension installed in the remote, we now need to do the followi
 3. If not displayed, select the ``Enter interpreter path...`` option. 
 4. Enter the path to the Python binary in the ``uv`` virtual environment for the project. This 
    should be something like: ``<project_root>/.venv/bin/python3.14``. For example, 
-   ``/coe-332/oeis-api/.venv/bin/python3.14``
+   ``/class-work/.venv/bin/python3.14``
 
 
 A Simple Test of the Remote Python Setup 
@@ -453,3 +453,27 @@ Test it out by adding a line like the following:
 
 This should highlight ``foobar`` with a red underline indicating that the symbol does not exist within 
 the ``fastapi`` package. 
+
+
+.. note:: 
+    
+    If you set type checking to strict, VSCode will flag the FastAPI line as not being used unless you 
+    reference it elsewhere in your code. Unused imports should be avoided. 
+
+Terminals via VSCode
+^^^^^^^^^^^^^^^^^^^^
+
+Another nice aspect of VSCode is that you can open terminals directly in the editor, and when you are using the 
+RemoteSSH plugin, the terminals opened will be terminals on the remote machine!
+
+To open a new Terminal use the Command Pallette (Cmd+Shift+P or Ctrl+Shift+P) and type "Terminal" which should
+present the option: "Terminal: Create New Terminal". Select this option, and you should a new terminal panel 
+open up at the bottom of your VSCode window.
+
+.. figure:: ./images/vscode-terminal-vm.png
+    :align: center
+    :alt: A terminal within the VSCode IDE.
+
+    A terminal within the VSCode IDE.
+
+You can see that the prompt contains ``ubuntu@student-1`` letting you know it is connected to your student VM. 
