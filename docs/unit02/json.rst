@@ -56,28 +56,28 @@ characters. Types can also be mixed together, forming complex data structures:
      ]
    }
 
-On your class VM, navigate to your home directory and make a new folder for
-this module:
+We'll be working through some examples by writing some code on your student VM. We'll use VSCode for these 
+interactions. Open a VSCode RemoteSSH session (Cmd+Shift+P -> RemoteSSH) and create a new 
+terminal (Cmd+Shift+P -> Terminal: Create New Terminal). 
 
-.. code-block:: console
-   :emphasize-lines: 1,4
 
-   [local]$ ssh username@coe332-2026.tacc.cloud
-   (enter password)
-   (enter token)
-   [coe332-2026]$ ssh coe332-vm
-   (no password required)
-   [coe332-vm]$ mkdir coe-332/ && cd coe-332/
-   [coe332-vm]$ mkdir working-with-json && cd working-with-json
+Within the terminal inside VSCode on your class VM, navigate to your ``uv`` project directory that you created 
+last time (``class-work``) and create a new directory within there called ``working-with-json``:
 
+.. code-block:: console 
+
+    [coe332-vm]$ cd class-work
+    [coe332-vm]$ mkdir working-with-json
+
+(You can also right-click from within the file explorer view and select New Folder...)
 
 Download this sample JSON files into that folder using the ``wget`` command, or
-click `this link <https://raw.githubusercontent.com/TACC/coe-332-sp25/main/docs/unit02/sample-data/Meteorite_Landings.json>`_
+click `this link <https://raw.githubusercontent.com/TACC/coe-332-sp26/main/docs/unit02/sample-data/Meteorite_Landings.json>`_
 and cut and paste the contents into a file called ``Meteorite_Landings.json``:
 
 .. code-block:: console
 
-   [coe332-vm]$ wget https://raw.githubusercontent.com/TACC/coe-332-sp25/main/docs/unit02/sample-data/Meteorite_Landings.json
+   [coe332-vm]$ wget https://raw.githubusercontent.com/TACC/coe-332-sp26/main/docs/unit02/sample-data/Meteorite_Landings.json
 
 
 
@@ -101,11 +101,10 @@ Read JSON into a Python3 Script
 
 The ``json`` Python3 library is part of the Python3 Standard Library, meaning it
 can be imported without having to be installed by pip. Start editing a new
-Python3 script using your method of choice:
-
-.. code-block:: console
-
-    [coe332-vm]$ vim json_ex.py
+Python3 script called ``json_ex.py`` within the ``working-with-json`` directory using VSCode 
+by right-click'ing the ``working-with-json`` folder and selecting ``New File...`` and entering 
+the name (``json_ex.py``) into the little box that opens up. 
+The main file editing panel will also open up the file for editing. 
 
 
 .. warning::
@@ -126,16 +125,33 @@ a Python3 object is:
        ml_data = json.load(f)
 
 Only three simple lines! We ``import json`` from the standard library so that we
-can work with the ``json`` class. We use the safe ``with open...`` statement to
+can work with the ``json`` module. We use the safe ``with open...`` statement to
 open the file we downloaded read-only into a filehandle called ``f``. Finally,
 we use the ``load()`` method of the ``json`` class to load the contents of the
 JSON file into our new ``ml_data`` object.
 
 EXERCISE
 ~~~~~~~~
+Add code to your script to print out the ``ml_data`` object to the screen. 
+Execute the script in the VSCode terminal. 
 
-Try out some of these calls to the ``type()`` function on the new ``ml_data``
-object that you loaded. Also ``print()`` each of these as necessary to be sure
+*Solution.* What do we need to add to the script to print the ``ml_data`` object and 
+where should we add it? 
+
+All that is required is that we add a ``print(ml_data)`` to the end of the script. 
+We can execute the script in the terminal using the following command: 
+
+.. code-block:: console 
+
+  [coe332-vm]$ python json_ex.py 
+
+
+EXERCISE
+~~~~~~~~
+
+Explore the types of the various objects within ``ml_data`` by making calls to the ``type()`` 
+function. In addition, use the ``keys()`` function to see what keys are available within the 
+dictionaries. Finally, ``print()`` each of these as necessary to be sure
 you know what each is. Be able to explain the output of each call to ``type()``
 and ``print()``.
 
@@ -154,13 +170,34 @@ and ``print()``.
 
    print(ml_data)
    print(ml_data['meteorite_landings'])
-   print(ml_data['meteorite_landings'][0])
+   print(ml_data['meteorite_landings'][0]
+   print(ml_data['meteorite_landings'][0].keys())
    print(ml_data['meteorite_landings'][0]['name'])
+   print(type(ml_data['meteorite_landings'][0]['mass (g)']))
 
 .. tip::
 
    Consider doing this in the Python3 interpreter's interactive mode instead of
    in a script.
+
+Modeling Data with Pydantic: A First Look 
+------------------------------------------
+
+If we look at an example meteorite landing from the data, we see a common structure: 
+
+.. code-block:: console 
+
+    {
+      "name": "Ruiz",
+      "id": "10001",
+      "recclass": "L5",
+      "mass (g)": "21",
+      "reclat": "50.775",
+      "reclong": "6.08333",
+      "GeoLocation": "(50.775, 6.08333)"
+    }    
+
+Each landing has a set of fields: ``name``, ``id``, ``recclass``, etc.
 
 Work with JSON Data
 -------------------
