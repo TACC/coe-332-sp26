@@ -53,8 +53,8 @@ the link was created:
 
 .. code-block:: console
 
-   [student-login]$ git remote add origin git@github.com:wjallen/python-test.git
-   [student-login]$ git remote -v
+   [coe332-vm]$ git remote add origin git@github.com:wjallen/python-test.git
+   [coe332-vm]$ git remote -v
    origin  git@github.com:wjallen/python-test.git (fetch)
    origin  git@github.com:wjallen/python-test.git (push)
 
@@ -72,13 +72,13 @@ up SSH keys, click on:
 
 Your account => Settings => SSH and GPG keys => New SSH key
 
-In the "Title" box, add a memorable name for this key like "student-login". In the "Key"
+In the "Title" box, add a memorable name for this key like "coe332-vm". In the "Key"
 box, cut and paste the contents of your existing public key on the class server.
 You can find it by executing the command:
 
 .. code-block:: console
 
-   [student-login]$ cat ~/.ssh/id_rsa.pub
+   [coe332-vm]$ cat ~/.ssh/id_rsa.pub
    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDF8crdmqgk2GhRmsLPcREWjzc9zb2B....
    ........................................................................
 
@@ -90,8 +90,8 @@ in to our Jetstream VMs.
 
 .. code-block:: console
 
-   [student-login]$ mkdir -p ~/.ssh/ && ssh-keygen -f ~/.ssh/github_rsa -t rsa -b 3072 -N ""
-   [student-login]$ cat ~/.ssh/github_rsa.pub
+   [coe332-vm]$ mkdir -p ~/.ssh/ && ssh-keygen -f ~/.ssh/github_rsa -t rsa -b 3072 -N ""
+   [coe332-vm]$ cat ~/.ssh/github_rsa.pub
    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDF8crdmqgk2GhRmsLPcREWjzc9zb2B....
    ........................................................................
 
@@ -110,8 +110,8 @@ repository to the repository on GitHub:
 
 .. code-block:: console
 
-   [student-login]$ git branch -M main
-   [student-login]$ git push -u origin main
+   [coe332-vm]$ git branch -M main
+   [coe332-vm]$ git push -u origin main
    Warning: Permanently added the ECDSA host key for IP address '140.82.112.4' to the list of known hosts.
    Counting objects: 3, done.
    Delta compression using up to 8 threads.
@@ -129,10 +129,10 @@ you can expect to follow the changes with the commands:
 .. code-block:: console
 
    # Make some edits to "example_file.py"
-   [student-login]$ git status
-   [student-login]$ git add example_file.py
-   [student-login]$ git commit -m "description of changes"
-   [student-login]$ git push
+   [coe332-vm]$ git status
+   [coe332-vm]$ git add example_file.py
+   [coe332-vm]$ git commit -m "description of changes"
+   [coe332-vm]$ git push
 
 
 
@@ -144,7 +144,7 @@ a full copy of the ``python-test`` repo including all the commit history by perf
 
 .. code-block:: console
 
-   [student-login]$ git clone git@github.com:wjallen/python-test.git
+   [coe332-vm]$ git clone git@github.com:wjallen/python-test.git
    Cloning into 'python-test'...
    remote: Enumerating objects: 15, done.
    remote: Counting objects: 100% (15/15), done.
@@ -161,8 +161,8 @@ changes back down.
 
 .. code-block:: console
 
-   [student-login]$ git remote update    # checks to see if there are updates in the remote
-   [student-login]$ git pull             # pulls those updates down to local
+   [coe332-vm]$ git remote update    # checks to see if there are updates in the remote
+   [coe332-vm]$ git pull             # pulls those updates down to local
 
 .. warning::
 
