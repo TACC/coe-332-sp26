@@ -250,15 +250,42 @@ For example, let's create an in itial ``uv`` project to hold our the work we do 
 This creates a new directory, ``class-work``, in the current working directory that includes the following 
 files: 
 
+* .git/ 
+* .gitignore
+* .venv 
+* .python-version
 * README.md
 * main.py
 * pyproject.toml
 
+You might first notice that it created the ``.git`` directory and a ``.gitignore`` file -- it has set up the directory 
+to be a git repository. As mentioned, each ``uv`` project is intended to be a git repository. 
+
+It also created a ``pyproject.tonl`` file. 
 The ``pyproject.toml`` file records specific metadata about the Python version and packages that 
-your project depends on. You can think of the ``pyproject.toml`` file as providing a minimum 
-specification of the environment required to execute your code correctly. We'll revisit this file 
-and the associated ``uv.lock`` file (which gets created later, 
-when you add packages to a project) later in the semester. 
+your project depends on. Let's take a look at the contents: 
+
+.. code-block:: console 
+
+    [coe332-vm]$ cat pyproject.toml
+
+    [project]
+    name = "class-work"
+    version = "0.1.0"
+    description = "Add your description here"
+    readme = "README.md"
+    requires-python = ">=3.14"
+    dependencies = []
+
+Here we see tha name of the projecct (``class-work``), the version of the project (``0.1.0`` since we didn't specify anything), 
+and some other metadata. For instance, we see ``requires-python = ">=3.14"`` indicating that the project requires **at least** 
+Python 3.14, but a higher version would be acceptable. At the moment, we also see that ``dependencies`` is an empty list --- 
+we haven't specified any library dependencies yet. More on this momentarily. 
+
+You can think of the ``pyproject.toml`` file as providing a *minimum 
+specification* of the environment required to execute your code correctly. Once any dependencies are installed however, 
+``uv`` records the **exact** requirements in a lock file. 
+We'll revisit the ``uv.lock`` file a bit later. 
 
 A Word on Python Packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -289,7 +316,7 @@ You can use the ``uv`` tool to install and manage dependencies for your project.
 use the command ``uv add <package_name>``, where ``<package_name>`` is the name of the package as 
 it appears on the Python Package Index (PyPI). You can specify a details about the version(s) of the 
 package your project can work with -- for example, a minimum and/or maximum version. These details 
-get recorded in the ``pyproject.toml`` file when you execute the `` uv add`` command. Additionally, 
+get recorded in the ``pyproject.toml`` file when you execute the ``uv add`` command. Additionally, 
 ``uv`` will actually install a specific version of the package. Details about the specific version 
 are recorded in the ``uv.lock`` file, including the sha256 hash of the content of any package 
 installed. 
@@ -299,7 +326,7 @@ package being added has dependencies. In that case, the toml file will include j
 specified to the add command, while the lock file will include an entry for every 
 package installed. 
 
-Below are some examples of adding packages with ``uv``. Use the examples to add ``fastapi`` 
+Below are some examples of adding packages with ``uv``. Use the examples to add ``fastapi``, ``pydantic``
 and ``uvicorn`` to your project. 
 
 
@@ -326,6 +353,57 @@ and ``uvicorn`` to your project.
         "pydantic>=2.12.5",
         "uvicorn>=0.40.0",
     ]
+
+
+Take a look at ``uv.lock`` file generated:
+
+.. code-block:: console 
+
+    [coe332-vm]$ cat uv.lock 
+
+    version = 1
+    revision = 3
+    requires-python = ">=3.14"
+
+    [[package]]
+    name = "annotated-doc"
+    version = "0.0.4"
+    source = { registry = "https://pypi.org/simple" }
+    sdist = { url = "https://files.pythonhosted.org/packages/57/ba/046ceea27344560984e26a590f90bc7f4a75b06701f653222458922b558c/annotated_doc-0.0.4.tar.gz", hash = "sha256:fbcda96e87e9c92ad167c2e53839e57503ecfda18804ea28102353485033faa4", size = 7288, upload-time = "2025-11-10T22:07:42.062Z" }
+    wheels = [
+        { url = "https://files.pythonhosted.org/packages/1e/d3/26bf1008eb3d2daa8ef4cacc7f3bfdc11818d111f7e2d0201bc6e3b49d45/annotated_doc-0.0.4-py3-none-any.whl", hash = "sha256:571ac1dc6991c450b25a9c2d84a3705e2ae7a53467b5d111c24fa8baabbed320", size = 5303, upload-time = "2025-11-10T22:07:40.673Z" },
+    ]
+
+
+    . . . 
+
+    [[package]]
+    name = "typing-inspection"
+    version = "0.4.2"
+    source = { registry = "https://pypi.org/simple" }
+    dependencies = [
+        { name = "typing-extensions" },
+    ]
+    sdist = { url = "https://files.pythonhosted.org/packages/55/e3/70399cb7dd41c10ac53367ae42139cf4b1ca5f36bb3dc6c9d33acdb43655/typing_inspection-0.4.2.tar.gz", hash = "sha256:ba561c48a67c5958007083d386c3295464928b01faa735ab8547c5692e87f464", size = 75949, upload-time = "2025-10-01T02:14:41.687Z" }
+    wheels = [
+        { url = "https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl", hash = "sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7", size = 14611, upload-time = "2025-10-01T02:14:40.154Z" },
+    ]
+
+    . . . 
+
+At the very top, we see metadata about the version of ``uv.lock`` itself (version 1, revision 3). Then we see information 
+about our project. First, we notice that the Python version must be 3.14 or greater --- this is the same as what was in the 
+toml file. 
+
+But then we see a list of entries starting with ``[package]``. These are all of the third-party packages that our code depends 
+on. Notice that we see many packages that we did not specify, like ``annotated-doc`` and ``typing-inspection``. Why is that? 
+
+For each package, ``uv`` not only records the exact version (e.g., 0.4.2 of ``typing-inspection``) but also the sha256 hash 
+of the package, the dependencies of that package, and other metadata. Thus, while the ``pyproject.toml`` file 
+describes the minimum specification of packaged needed, the ``uv.lock`` file described the **exact environment** needed to 
+reproduce the Python environment used with the project code. Thus, the ``uv.lock`` file is an essential tool for reproducible
+environments. 
+
 
 VSCode IDE via Remote-SSH Plugin 
 --------------------------------
