@@ -241,23 +241,46 @@ To create a new project, simply issue:
 
     [coe332-vm]$ uv init <project_name>
 
-Run the following the home directory of your VM, 
+For example, let's create an in itial ``uv`` project to hold our the work we do in class:
 
 .. code-block:: console
 
-    [coe332-vm]$ uv init coe-in-class
+    [coe332-vm]$ uv init class-work
 
-This creates a new directory, ``coe-in-class``, in the current working directory that includes the following 
+This creates a new directory, ``class-work``, in the current working directory that includes the following 
 files: 
 
 * README.md
 * main.py
 * pyproject.toml
 
-The ``pyproject.toml`` file records specific metadata about the Python version and packages that your project depends on. 
-You can think of the ``pyproject.toml`` file as providing a minimum specification of the environment required to execute your 
-code correctly. We'll revisit this file and the associated ``uv.lock`` file (which gets created later, 
+The ``pyproject.toml`` file records specific metadata about the Python version and packages that 
+your project depends on. You can think of the ``pyproject.toml`` file as providing a minimum 
+specification of the environment required to execute your code correctly. We'll revisit this file 
+and the associated ``uv.lock`` file (which gets created later, 
 when you add packages to a project) later in the semester. 
+
+A Word on Python Packages
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Python programming language includes many modules and packages for common programming 
+tasks as part of the **standard library**. These packages come with Python itself --- once you 
+have downloaded and installed Python, there is nothing additional you need to do to use the 
+package: simply import it into your script and you can being using it. Examples include the 
+``json`` library, for working with JSON data (which we will use in the next class), the 
+``os`` package, for working with files and directories, and the ``re`` package for leveraging 
+regular expressions. 
+
+At the same time, there are many more **third-party** packages that you can install to add 
+additional functionality to your programs. For example, the ``requests`` package provides an 
+excellent API for making HTTP requests, and the ``fastapi`` package provides a framework for 
+developing HTTP services. Unlike packages from the standard library, third-party 
+packages must be downloaded and installed before they can be used. 
+
+Many of these packages are managed through the Python 
+Pakcage Index, abbreviated PyPI, and pronounced "pi-pi". Packages come in multiple different 
+versions and with their own dependencies, so managing the installation of the third-party 
+packages a certin program or code base depends on can be a challenging task. 
 
 Adding Dependencies 
 ^^^^^^^^^^^^^^^^^^^^
@@ -282,7 +305,7 @@ and ``uvicorn`` to your project.
 
 .. code-block:: console
 
-    [coe332-vm]$ cd coe-in-class
+    [coe332-vm]$ cd class-work
     
     # add a package
     [coe332-vm]$ uv add fastapi
@@ -293,7 +316,7 @@ and ``uvicorn`` to your project.
     # check the results
     [coe332-vm]$ cat pyproject.toml
     [project]
-    name = "coe-in-class"
+    name = "class-work"
     version = "0.1.0"
     description = "Add your description here"
     readme = "README.md"
@@ -418,7 +441,7 @@ With the Python extension installed in the remote, we now need to do the followi
 3. If not displayed, select the ``Enter interpreter path...`` option. 
 4. Enter the path to the Python binary in the ``uv`` virtual environment for the project. This 
    should be something like: ``<project_root>/.venv/bin/python3.14``. For example, 
-   ``/coe-332/oeis-api/.venv/bin/python3.14``
+   ``/class-work/.venv/bin/python3.14``
 
 
 A Simple Test of the Remote Python Setup 
@@ -453,3 +476,27 @@ Test it out by adding a line like the following:
 
 This should highlight ``foobar`` with a red underline indicating that the symbol does not exist within 
 the ``fastapi`` package. 
+
+
+.. note:: 
+    
+    If you set type checking to strict, VSCode will flag the FastAPI line as not being used unless you 
+    reference it elsewhere in your code. Unused imports should be avoided. 
+
+Terminals via VSCode
+^^^^^^^^^^^^^^^^^^^^
+
+Another nice aspect of VSCode is that you can open terminals directly in the editor, and when you are using the 
+RemoteSSH plugin, the terminals opened will be terminals on the remote machine!
+
+To open a new Terminal use the Command Pallette (Cmd+Shift+P or Ctrl+Shift+P) and type "Terminal" which should
+present the option: "Terminal: Create New Terminal". Select this option, and you should a new terminal panel 
+open up at the bottom of your VSCode window.
+
+.. figure:: ./images/vscode-terminal-vm.png
+    :align: center
+    :alt: A terminal within the VSCode IDE.
+
+    A terminal within the VSCode IDE.
+
+You can see that the prompt contains ``ubuntu@student-1`` letting you know it is connected to your student VM. 
