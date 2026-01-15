@@ -351,7 +351,7 @@ For more details and alternatives, see the documentation for Remote SSH [1].
         User ubuntu
         HostName 10.10.xx.yy
         IdentityFile ~/.ssh/id_rsa
-        ProxyCommand ssh -o 'ForwardAgent yes' coe332-2026.tacc.cloud 'ssh-add && nc %h %p'
+        ProxyCommand ssh -o 'ForwardAgent yes' <your_tacc_username>@coe332-2026.tacc.cloud 'ssh-add && nc %h %p'
 
 Here we have added an entry that will use a proxy command that will first SSH to 
 ``coe332-2026.tacc.cloud`` before SSHing to the actual student VM. 
