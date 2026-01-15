@@ -72,12 +72,12 @@ last time (``class-work``) and create a new directory within there called ``work
 (You can also right-click from within the file explorer view and select New Folder...)
 
 Download this sample JSON files into that folder using the ``wget`` command, or
-click `this link <https://raw.githubusercontent.com/TACC/coe-332-sp26/main/docs/unit02/sample-data/Meteorite_Landings.json>`_
+click `this link <https://raw.githubusercontent.com/TACC/coe-332-sp26/main/docs/unit02/sample-data/Meteorite_Landings_Simple.json>`_
 and cut and paste the contents into a file called ``Meteorite_Landings.json``:
 
 .. code-block:: console
 
-   [coe332-vm]$ wget https://raw.githubusercontent.com/TACC/coe-332-sp26/main/docs/unit02/sample-data/Meteorite_Landings.json
+   [coe332-vm]$ wget https://raw.githubusercontent.com/TACC/coe-332-sp26/main/docs/unit02/sample-data/Meteorite_Landings_Simple.json
 
 
 
