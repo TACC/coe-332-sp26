@@ -203,7 +203,7 @@ and ``print()``.
 
    import json
 
-   with open('Meteorite_Landings.json', 'r') as f:
+   with open('Meteorite_Landings_Simple.json', 'r') as f:
        ml_data = json.load(f)
 
    type(ml_data)
@@ -216,7 +216,7 @@ and ``print()``.
    print(ml_data['meteorite_landings'][0]
    print(ml_data['meteorite_landings'][0].keys())
    print(ml_data['meteorite_landings'][0]['name'])
-   print(type(ml_data['meteorite_landings'][0]['mass (g)']))
+   print(type(ml_data['meteorite_landings'][0]['mass']))
 
 .. tip::
 
@@ -628,7 +628,7 @@ methods for *serializing*, or converting, to standard formats such as JSON.
 Given a Pydantic model, for example our ``ml1`` we created above, we can 
 use the ``model_dump_json()`` function to generate JSON. 
 
-.. code-block:: python:
+.. code-block:: python3
 
     ml1
     --> MeteoriteLanding(name='Ruiz', id=10001, class_name='L5', mass=21, lat=50.775, long=6.08333)
