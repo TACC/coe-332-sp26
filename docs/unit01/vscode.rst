@@ -123,10 +123,10 @@ for Windows, Mac, and Linux:
  * Windows -- Follow the instructions `here. <https://code.visualstudio.com/docs/setup/windows>`_
 
 Remember, you only need to follow the first step to install the actual VSCode application. Next, we're going to 
-install the following additional plugins. 
+install the following additional extensions. 
 
-Installing the Necessary VSCode Plugins 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Installing the Necessary VSCode Extensions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Open the Extensions view by either clicking Extensions from the left navbar (the icon with two 
 squares and a diamond) or by using the Ctrl+Shift+X (Linux/Windows) or Cmd+Shift+X (Mac) key combination. 
 You will see the extensions organized into listed of "Installed", "Recommended", etc. You can also 
@@ -138,7 +138,7 @@ search for extensions by typing into the search box. Install the following exten
 * Remote-SSH (from Microsoft) -- Provided support for developing code on remote servers using an SSH 
   connection. 
 
-To install a plugin, click the plugin from the Extensions tab and then click "install".
+To install an extension, click the extension from the Extensions tab and then click "install".
 
 .. warning:: 
 
@@ -405,11 +405,11 @@ reproduce the Python environment used with the project code. Thus, the ``uv.lock
 environments. 
 
 
-VSCode IDE via Remote-SSH Plugin 
---------------------------------
+VSCode IDE via Remote-SSH Extension 
+-----------------------------------
 
 Now we will connect to code installed 
-on the VM using VSCode and the Remote-SSH plugin.
+on the VM using VSCode and the Remote-SSH extension.
 
 The easiest way I have found to do this is to 
 create an SSH config file with an entry for your VM, 
@@ -565,7 +565,7 @@ Terminals via VSCode
 ^^^^^^^^^^^^^^^^^^^^
 
 Another nice aspect of VSCode is that you can open terminals directly in the editor, and when you are using the 
-RemoteSSH plugin, the terminals opened will be terminals on the remote machine!
+RemoteSSH extension, the terminals opened will be terminals on the remote machine!
 
 To open a new Terminal use the Command Pallette (Cmd+Shift+P or Ctrl+Shift+P) and type "Terminal" which should
 present the option: "Terminal: Create New Terminal". Select this option, and you should a new terminal panel 
