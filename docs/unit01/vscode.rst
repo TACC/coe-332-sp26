@@ -123,10 +123,10 @@ for Windows, Mac, and Linux:
  * Windows -- Follow the instructions `here. <https://code.visualstudio.com/docs/setup/windows>`_
 
 Remember, you only need to follow the first step to install the actual VSCode application. Next, we're going to 
-install the following additional plugins. 
+install the following additional extensions. 
 
-Installing the Necessary VSCode Plugins 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Installing the Necessary VSCode Extensions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Open the Extensions view by either clicking Extensions from the left navbar (the icon with two 
 squares and a diamond) or by using the Ctrl+Shift+X (Linux/Windows) or Cmd+Shift+X (Mac) key combination. 
 You will see the extensions organized into listed of "Installed", "Recommended", etc. You can also 
@@ -138,7 +138,7 @@ search for extensions by typing into the search box. Install the following exten
 * Remote-SSH (from Microsoft) -- Provided support for developing code on remote servers using an SSH 
   connection. 
 
-To install a plugin, click the plugin from the Extensions tab and then click "install".
+To install an extension, click the extension from the Extensions tab and then click "install".
 
 .. warning:: 
 
@@ -405,17 +405,20 @@ reproduce the Python environment used with the project code. Thus, the ``uv.lock
 environments. 
 
 
-VSCode IDE via Remote-SSH Plugin 
---------------------------------
+VSCode IDE via Remote-SSH Extension 
+-----------------------------------
 
 Now we will connect to code installed 
-on the VM using VSCode and the Remote-SSH plugin.
+on the VM using VSCode and the Remote-SSH extension.
 
 The easiest way I have found to do this is to 
 create an SSH config file with an entry for your VM, 
 and then use that alias in VSCode.
 
 For more details and alternatives, see the documentation for Remote SSH [1]. 
+
+Instructions for Mac and Linux 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. Install VSCode and SSH client on your machine, if not already installed.
 
@@ -428,8 +431,13 @@ For more details and alternatives, see the documentation for Remote SSH [1].
     Host 332-vm
         User ubuntu
         HostName 10.10.xx.yy
-        IdentityFile ~/.ssh/id_rsa
-        ProxyCommand ssh -o 'ForwardAgent yes' coe332-2026.tacc.cloud 'ssh-add && nc %h %p'
+        IdentityFile ~/.ssh/id_ed25519
+        ProxyCommand ssh -o 'ForwardAgent yes' <tacc_user_name>@coe332-2026.tacc.cloud 'ssh-add && nc %h %p'
+
+In the above config file, be sure to replace: 
+
+1. ``10.10.xx.yy`` -- replace this with the IP address of your actual student VM. 
+2. ``<tacc_user_name>`` -- replace with your TACC username (and remove the ``<>``).
 
 Here we have added an entry that will use a proxy command that will first SSH to 
 ``coe332-2026.tacc.cloud`` before SSHing to the actual student VM. 
@@ -565,7 +573,7 @@ Terminals via VSCode
 ^^^^^^^^^^^^^^^^^^^^
 
 Another nice aspect of VSCode is that you can open terminals directly in the editor, and when you are using the 
-RemoteSSH plugin, the terminals opened will be terminals on the remote machine!
+RemoteSSH extension, the terminals opened will be terminals on the remote machine!
 
 To open a new Terminal use the Command Pallette (Cmd+Shift+P or Ctrl+Shift+P) and type "Terminal" which should
 present the option: "Terminal: Create New Terminal". Select this option, and you should a new terminal panel 
