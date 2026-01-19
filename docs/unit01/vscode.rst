@@ -417,6 +417,9 @@ and then use that alias in VSCode.
 
 For more details and alternatives, see the documentation for Remote SSH [1]. 
 
+Instructions for Mac and Linux 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 1. Install VSCode and SSH client on your machine, if not already installed.
 
 2. Install the Remote-SSH client. Go to Extensions (Ctrl+Shift+X), type "Remote-SSH" and click ``Install``
@@ -428,8 +431,13 @@ For more details and alternatives, see the documentation for Remote SSH [1].
     Host 332-vm
         User ubuntu
         HostName 10.10.xx.yy
-        IdentityFile ~/.ssh/id_rsa
-        ProxyCommand ssh -o 'ForwardAgent yes' coe332-2026.tacc.cloud 'ssh-add && nc %h %p'
+        IdentityFile ~/.ssh/id_ed25519
+        ProxyCommand ssh -o 'ForwardAgent yes' <tacc_user_name>@coe332-2026.tacc.cloud 'ssh-add && nc %h %p'
+
+In the above config file, be sure to replace: 
+
+1. ``10.10.xx.yy`` -- replace this with the IP address of your actual student VM. 
+2. ``<tacc_user_name>`` -- replace with your TACC username (and remove the ``<>``).
 
 Here we have added an entry that will use a proxy command that will first SSH to 
 ``coe332-2026.tacc.cloud`` before SSHing to the actual student VM. 
