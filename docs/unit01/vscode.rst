@@ -488,7 +488,7 @@ If you don't have SSH keys, generate one:
 Press ``Enter`` to accept the default file location (``~/.ssh/id_ed25519``) and optionally 
 set a passphrase. 
 
-2. *Add your public key to your student vm**
+2. **Add your public key to your student vm**
 
 You now need to copy your public key to the ``~/.ssh/authorized_keys`` file on your VM.
 First, get your public key:
