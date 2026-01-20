@@ -37,21 +37,20 @@ the functions defined within, then the internal variable ``__name__`` will inste
 be set to the name of the script. Thus, the ``main()`` function is not called,
 but other functions defined in this script would be available.
 
-Consider the script we wrote in the previous unit for analyzing the Meteorite
-Landings JSON file (called ``ml_data_analysis.py``):
+Consider the script below for analyzing the Meteorite:
 
 .. code-block:: python3
     :linenos:
 
     import json
 
-    def compute_average_mass(a_list_of_dicts, a_key_string):
+    def compute_average_mass(items: list[dict], key: str) -> float:
         total_mass = 0.
-        for item in a_list_of_dicts:
-            total_mass += float(item[a_key_string])
-        return(total_mass / len(a_list_of_dicts) )
+        for item in items:
+            total_mass += float(item[key])
+        return(total_mass / len(items) )
 
-    def check_hemisphere(latitude, longitude):
+    def check_hemisphere(latitude: float, longitude: float):
         location = 'Northern' if (latitude > 0) else 'Southern'
         location = f'{location} & Eastern' if (longitude > 0) else f'{location} & Western'
         return(location)
@@ -74,11 +73,11 @@ calls into a main function:
 
     import json
 
-    def compute_average_mass(a_list_of_dicts, a_key_string):
+    def compute_average_mass(items: list[dict], key: str) -> float:
         total_mass = 0.
-        for item in a_list_of_dicts:
-            total_mass += float(item[a_key_string])
-        return(total_mass / len(a_list_of_dicts) )
+        for item in items:
+            total_mass += float(item[key])
+        return(total_mass / len(items) )
 
     def check_hemisphere(latitude, longitude):
         location = 'Northern' if (latitude > 0) else 'Southern'
@@ -175,11 +174,11 @@ name of the key to extract.
 .. code-block:: python3
 
    # GOOD
-   def compute_average_mass(a_list_of_dicts, a_key_string):
+   def compute_average_mass(items: list[dict], key: str) -> float:
        total_mass = 0.
-       for item in a_list_of_dicts:
-           total_mass += float(item[a_key_string])
-       return(total_mass / len(a_list_of_dicts) )
+       for item in items:
+           total_mass += float(item[key])
+       return(total_mass / len(items) )
 
    print(compute_average_mass(ml_data['meteorite_landings'] ,'mass (g)' ))
 
@@ -205,8 +204,8 @@ have worked for most of the data structures we use in this class.
 .. code-block:: python3
 
    # NOT TERRIBLE
-   def check_hemisphere(a_list_of_dicts, lat_key, long_key):
-       for item in a_list_of_dicts:
+   def check_hemisphere(a_list_of_items, lat_key, long_key):
+       for item in a_list_of_items:
            location = 'Northern' if (float(item[lat_key]) > 0) else 'Southern'
            location = f'{location} & Eastern' if (float(item[long_key]) > 0) else f'{location} & Western'
            print(location)
