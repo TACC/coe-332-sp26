@@ -547,6 +547,11 @@ On your local laptop, edit the file ``~/.ssh/config`` to contain the following:
 For All Operating Systems 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+**Confirm VSCode Can Read Your SSH Config File**. First, in a VSCode window, open the 
+Command Pallette (Ctrl+Shift+P) and type "remote-ssh: open SSH configuration file", and 
+then make sure that the path to the config file you edited above shows up. 
+
+
 4. Now, in a VSCode window, open the Command Pallette (Ctrl+Shift+P) and type 
 "remote-ssh: Connect to host", and then:
 
