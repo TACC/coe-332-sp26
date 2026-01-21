@@ -464,6 +464,94 @@ Notes:
   * The string after ``User`` should be the remote account to connect with.
   * The part after ``HostName`` (i.e., the ``10.10.xx.yy``) should  be the actual IP address of your student server.
 
+Instructions for Windows
+^^^^^^^^^^^^^^^^^^^^^^^^
+Some students have gotten the instructions above to work in Windows, but here, we provide an 
+alternative that should work in **Windows Powershell** (note, not Windows Subsystem for Linux).
+The initial SSH key setup in this procedure is a little different. 
+
+1. First, check if you already have SSH keys on your local machine:
+
+.. code-block:: console
+
+    $ ls ~/.ssh/id_*
+
+If you see files like ``id_rsa``, ``id_ed25519``, or ``id_ecdsa``, you already have SSH keys.
+Note which one you have (we'll use ``id_ed25519`` as an example, but use whichever key type you have).
+
+If you don't have SSH keys, generate one:
+
+.. code-block:: console
+
+    $ ssh-keygen -t ed25519 -C "your_email@example.com"
+
+Press ``Enter`` to accept the default file location (``~/.ssh/id_ed25519``) and optionally 
+set a passphrase. 
+
+2. **Add your public key to your student vm**
+
+You now need to copy your public key to the ``~/.ssh/authorized_keys`` file on your VM.
+First, get your public key:
+
+ **On Windows (PowerShell):**
+
+.. code-block:: powershell
+
+    PS> Get-Content ~/.ssh/id_ed25519.pub | Set-Clipboard
+
+Now, SSH to your VM using the two-step process described earlier:
+
+.. code-block:: console
+
+    [local]$ ssh username@student-login.tacc.utexas.edu
+    (enter password)
+    (enter MFA token)
+    [coe332-2026]$ ssh mbs-337
+
+Once connected to your VM, add your public key to the authorized_keys file:
+
+.. code-block:: console
+
+    [coe332-vm]$ vim ~/.ssh/authorized_keys
+
+In vim, press ``i`` to enter insert mode, paste your public key, then press ``Esc`` and type ``:wq`` 
+to save and exit.
+
+While you are here, get the IP address for your VM (you'll need this for the SSH config in step 5):
+
+.. code-block:: console
+
+    [coe332-vm]$ ip addr | grep 10.10 
+    10.10.xx.yy # Copy this IP address
+
+
+3. **Create SSH config file**
+
+On your local laptop, edit the file ``~/.ssh/config`` to contain the following:
+
+.. code-block:: bash
+
+    Host student-login-jump
+        HostName coe332-2026.tacc.cloud
+        User your_tacc_username
+        IdentityFile ~/.ssh/id_ed25519
+        ForwardAgent yes
+
+    Host 332-vm
+        HostName 10.10.xx.yy
+        User ubuntu
+        IdentityFile ~/.ssh/id_ed25519
+        ProxyJump student-login-jump
+
+
+For All Operating Systems 
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Confirm VSCode Can Read Your SSH Config File**. First, in a VSCode window, open the 
+Command Pallette (Ctrl+Shift+P) and type "remote-ssh: open SSH configuration file", and 
+then make sure that the path to the config file you edited above shows up. 
+
+
 4. Now, in a VSCode window, open the Command Pallette (Ctrl+Shift+P) and type 
 "remote-ssh: Connect to host", and then:
 
