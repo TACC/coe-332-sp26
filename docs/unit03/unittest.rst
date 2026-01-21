@@ -29,7 +29,7 @@ In your project directory, run the following:
 
 .. code-block:: console
 
-   [coe332-vm]$ uv add pytest
+   [coe332-vm]$ uv add --dev pytest
 
 Find the `documentation here <https://docs.pytest.org/en/7.0.x/>`_.
 
@@ -49,17 +49,19 @@ function. We might choose to test it manually using the Python3 interactive
 interpreter:
 
 .. code-block:: python3
-
-   >>> from ml_data_analysis import compute_average_mass
+   >>> from models import MeteoriteLanding, compute_average_mass
    >>>
-   >>> data = [{'thing': 1}, {'thing': 2}]
+   >>> ml1 = MeteoriteLanding(**{"name": 'Meteor1', "id": 1, "recclass": 'L5', "mass (g)": 3, "reclat": 50.775, "reclong": 6.08333})
+   >>> ml2 = MeteoriteLanding(**{"name": 'Meteor2', "id": 2, "recclass": 'L5', "mass (g)": 7, "reclat": -50.775, "reclong": 6.08333})
    >>>
-   >>> print(compute_average_mass(data, 'thing'))
-   1.5
+   >>> data = [ml1, ml2]
+   >>>
+   >>> print(compute_average_mass(data))
+   5.0
 
 So simple! We import our code, hand-craft a simple data structure, and send the
 data plus the key we are interested in to our function. We know off the top of
-our heads that the average of 1 and 2 is 1.5, and that is in fact the number we
+our heads that the average of 3 and 7 is 5.0, and that is in fact the number we
 get back.
 
 Instead of writing that out each time we want to test, let's instead put this
@@ -70,22 +72,22 @@ prefix added at the beginning.
 
 .. code-block:: console
 
-   [coe332-vm]$ ls
-   Meteorite_Landings.json  ml_data_analysis.py
    [coe332-vm]$ touch test_ml_data_analysis.py
-   [coe332-vm]$ ls
-   Meteorite_Landings.json  ml_data_analysis.py  test_ml_data_analysis.py
 
 
-Open up the script with VIM and put in our testing code from before:
+Open up the script with VIM (or editor of your choice) and put in our testing code:
 
 .. code-block:: python3
    :linenos:
 
-   from ml_data_analysis import compute_average_mass
-
-   data = [{'thing': 1}, {'thing': 2}]
-   print(compute_average_mass(data, 'thing'))
+   from models import MeteoriteLanding, compute_average_mass
+   
+   ml1 = MeteoriteLanding(**{"name": 'Meteor1', "id": 1, "recclass": 'L5', "mass (g)": 3, "reclat": 50.775, "reclong": 6.08333})
+   ml2 = MeteoriteLanding(**{"name": 'Meteor2', "id": 2, "recclass": 'L5', "mass (g)": 7, "reclat": -50.775, "reclong": 6.08333})
+   
+   data = [ml1, ml2]
+   
+   print(compute_average_mass(data))
 
 
 Next try to execute the test script on the command line:
@@ -93,22 +95,26 @@ Next try to execute the test script on the command line:
 .. code-block:: console
 
    [coe332-vm]$ python3 test_ml_data_analysis.py
-   1.5
+   5.0
 
 Great! We assume the test is working. But we still have to look at the output
-(1.5) and remember back to our hand-crafted data and make sure that is the correct
+(5.0) and remember back to our hand-crafted data and make sure that is the correct
 result. It would be more efficient if we had a way to check that the correct
 answer is returned in our test script itself. To do this, we can use the ``assert``
 statement.
 
 .. code-block:: python3
    :linenos:
-   :emphasize-lines: 4
+   :emphasize-lines: 8
 
-   from ml_data_analysis import compute_average_mass
-
-   data = [{'thing': 1}, {'thing': 2}]
-   assert(compute_average_mass(data, 'thing') == 1.5)
+   from models import MeteoriteLanding, compute_average_mass
+   
+   ml1 = MeteoriteLanding(**{"name": 'Meteor1', "id": 1, "recclass": 'L5', "mass (g)": 3, "reclat": 50.775, "reclong": 6.08333})
+   ml2 = MeteoriteLanding(**{"name": 'Meteor2', "id": 2, "recclass": 'L5', "mass (g)": 7, "reclat": -50.775, "reclong": 6.08333})
+   
+   data = [ml1, ml2]
+   
+   assert (compute_average_mass(data) == 5.0)
 
 Now instead of printing the result, we use ``assert`` to make sure it is equal
 to our expected outcome. If the conditional is true, nothing will be printed. If
@@ -125,20 +131,11 @@ EXERCISE
   know?
 
 
-
 Automate Testing with Pytest
 ----------------------------
-
+We will be using the automated testing framework ``pytest`` to test our code.
 Pytest is an excellent framework for small unit tests and for large functional
-tests (as we will see later in the semester). If you previously installed pytest
-with pip3, now would be a good time to double check that the installation worked
-and there is an executable called ``pytest`` in your PATH:
-
-.. code-block:: console
-
-   [coe332-vm]$ pytest --version
-   pytest 8.0.0
-
+tests (as we will see later in the semester).
 
 Next, we just need to make a minor organizational change to our test code. We
 group all of our tests for a given function (e.g. all the tests for 
@@ -149,17 +146,21 @@ Pytest will automatically look in our working tree for files that start with the
 
 .. code-block:: python3
    :linenos:
-   :emphasize-lines: 3
+   :emphasize-lines: 7
 
-   from ml_data_analysis import compute_average_mass
-
+   from models import MeteoriteLanding, compute_average_mass
+   
+   ml1 = MeteoriteLanding(**{"name": 'Meteor1', "id": 1, "recclass": 'L5', "mass (g)": 3, "reclat": 50.775, "reclong": 6.08333})
+   ml2 = MeteoriteLanding(**{"name": 'Meteor2', "id": 2, "recclass": 'L5', "mass (g)": 7, "reclat": -50.775, "reclong": 6.08333})
+   ml3 = MeteoriteLanding(**{"name": 'Meteor3', "id": 3, "recclass": 'L5', "mass (g)": 11, "reclat": -50.775, "reclong": 6.08333})
+   
    def test_compute_average_mass():
-       assert compute_average_mass([{'a': 1}, {'a': 2}], 'a') == 1.5
-       assert compute_average_mass([{'a': 1}, {'a': 2}, {'a': 3}], 'a') == 2
-       assert compute_average_mass([{'a': 10}, {'a': 1}, {'a': 1}], 'a') == 4
+      assert (compute_average_mass([m1, m2]) == 5.0)
+      assert (compute_average_mass([m1, m3]) == 7.0)
+      assert (compute_average_mass([m1, m2, m3]) == 7.0)
 
 
-Call the ``pytest`` executable in your top directory, it will find your test
+Call the ``pytest`` executable in your top directory with ``uv run pytest``, it will find your test
 function in your test script, run that function, and finally print some
 informative output:
 
@@ -178,21 +179,16 @@ informative output:
 What Else Should We Test?
 -------------------------
 
-The simple tests we wrote above seem almost trivial, but they are actually great
+The simple tests we wrote above seems almost trivial, but they are actually great
 sanity tests to tell us that our code is working. What other behaviors of our
 ``compute_average_mass()`` function should we test? In no particular order, we
 could test the following non-exhaustive list:
 
-* If the list only contains one dictionary object, the function still behaves as
+* If the list only contains one MeteoriteLanding object, the function still behaves as
   expected
 * The return value should be type ``float``
 * If we send it an empty list, that should raise some sort of exception
-* If we send it a list of non-uniform dictionaries (e.g. the dictionaries don't
-  all have the expected key), we should get a ``KeyError``
-* If we send it bad values (e.g. a value is a string instead of an expected
-  float), we should get a ``ValueError``
-* If we send it a string that doesn't appear in the dictionaries, we should get
-  a ``KeyError``
+* If we give it bad arguments (e.g. a value is a string instead of a MeteoriteLanding object), we should get an ``Exception``
 
 .. tip::
 
@@ -206,30 +202,28 @@ organize them into their own functions.
 
 .. code-block:: python3
    :linenos:
-   :emphasize-lines: 11
+   :emphasize-lines: 10-11,13-17
 
-   from ml_data_analysis import compute_average_mass
+   from models import MeteoriteLanding, compute_average_mass
    import pytest
-
+   
+   ml1 = MeteoriteLanding(**{"name": 'Meteor1', "id": 1, "recclass": 'L5', "mass (g)": 3, "reclat": 50.775, "reclong": 6.08333})
+   ml2 = MeteoriteLanding(**{"name": 'Meteor2', "id": 2, "recclass": 'L5', "mass (g)": 7, "reclat": -50.775, "reclong": 6.08333})
+   ml3 = MeteoriteLanding(**{"name": 'Meteor3', "id": 3, "recclass": 'L5', "mass (g)": 11, "reclat": -50.775, "reclong": 6.08333})
+   
    def test_compute_average_mass():
-       assert compute_average_mass([{'a': 1}], 'a') == 1
-       assert compute_average_mass([{'a': 1}, {'a': 2}], 'a') == 1.5
-       assert compute_average_mass([{'a': 1}, {'a': 2}, {'a': 3}], 'a') == 2
-       assert compute_average_mass([{'a': 10}, {'a': 1}, {'a': 1}], 'a') == 4
-       assert isinstance(compute_average_mass([{'a': 1}, {'a': 2}], 'a'), float) == True
+      assert (compute_average_mass([ml1, ml2]) == 5.0)
+      assert (compute_average_mass([ml1, ml3]) == 7.0)
+      assert (compute_average_mass([ml1, m2l, ml3]) == 7.0)
 
    def test_compute_average_mass_exceptions():
-       with pytest.raises(ZeroDivisionError):
-           compute_average_mass([], 'a')                               # send an empty list
-       with pytest.raises(KeyError):
-           compute_average_mass([{'a': 1}, {'b': 1}], 'a')             # dictionaries not uniform
-       with pytest.raises(ValueError):
-           compute_average_mass([{'a': 1}, {'a': 'x'}], 'a')           # value not a float
-       with pytest.raises(KeyError):
-           compute_average_mass([{'a': 1}, {'a': 2}], 'b')             # key not in dicts
+      with pytest.raises(ZeroDivisionError):
+         compute_average_mass([])
+      with pytest.raises(AttributeError):
+         compute_average_mass(["foo"])                    
 
 
-After adding the above tests, run ``pytest`` again:
+After adding the above tests, run ``uv run pytest`` again:
 
 .. code-block:: console
 
@@ -268,13 +262,13 @@ an argument and prints something to screen:
    :linenos:
 
    def print_func(num):      
-       print(f'hello {num}') 
+      print(f'hello {num}') 
                           
    def main():               
-       print_func(5)         
+      print_func(5)         
                           
    if __name__ == '__main__':
-       main()    
+      main()    
 
 Executing this code prints ``hello 5`` to screen. To write a unit test for this,
 we import the function into our test script, call the function normally, then
@@ -288,14 +282,41 @@ called ``print_hello.py``.
    from print_hello import print_func   
                                       
    def test_print_func(capsys):          
-       print_func(1)                     
-       captured = capsys.readouterr()    
-       assert captured.out == 'hello 1\n'
+      print_func(1)                     
+      captured = capsys.readouterr()    
+      assert captured.out == 'hello 1\n'
 
 Notice that we put a newline character (``\n``) at the end of the expected output.
 This character is automatically added by the ``print`` function. See the additional
 resources below for more information on using ``capsys``.
 
+Organizing Your Tests & Test Data
+---------------------------------
+
+In the previous example, we put our tests in a `test_*.py` file. This is fine if you only have a few tests.
+But how should we handle the case in which we are testing many funcions, classes, modules, etc?
+
+There are a many valid ways to organize your tests and test data.
+
+One common approach is to put all of your tests in a ``tests`` directory at the root of you
+project. Quite often, the internal directory structure of ``tests`` will closely mirror the directory 
+structure of the project you're building tests for.
+
+For example, if we have a function ``check_hemisphere`` in ``src/models.py`` then we might put the test for that function
+in ``tests/test_models`` or ``tests/models/test_check_hemisphere``. Following this pattern will make it easy
+to find tests associated with some part of your codebase.
+
+Another possibility is to put your tests adjacent to the code against which those tests are written.
+
+For example, if we have a function ``check_hemisphere`` in ``src/models.py`` then we might put the test for that function
+in ``src/test_models.py
+
+Your test's will generally follow the same pattern. In the previous tests that we wrote, the
+``MeteoriteLanding`` test data was initialized in the test itself. But what if we want to reuse those
+test objects? We don't want to rewrite the same test data over and over in different tests.
+
+Regardless of whether we are following the first or second organizational pattern, it often makes the most sense to put
+your test objects in some centralized location above or adjacent to the tests that will be using that data.
 
 Additional Resources
 --------------------

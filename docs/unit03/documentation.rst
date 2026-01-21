@@ -91,77 +91,60 @@ working on:
 
 .. code-block:: python3
     :linenos:
-    :emphasize-lines: 5-17,24-34,40-42
+    :emphasize-lines: 4-13,20-29,42-44
+    :caption: models.py
 
-    #!/usr/bin/env python3
-    import json
+    ...
 
-    def compute_average_mass(meteorite_landings: list[MeteoriteLanding]):
+    def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
         """
-        Iterates through a list of dictionaries, pulling out values associated with
-        a given key. Returns the average of those values.
+        Iterates through a list of meteorite landing objects, adds their masses together
+        and returns that sum divided by the total number or landings
 
         Args:
-            a_list_of_dicts (list): A list of dictionaries, each dict should have the
-                                    same set of keys.
-            a_key_string (string): A key that appears in each dictionary associated
-                                   with the desired value (will enforce float type).
+            landings: A list of meteorite landing objects
 
         Returns:
-            result (float): Average value.
+            result: Average value.
         """
         total_mass = 0.
-        for item in a_list_of_dicts:
-            total_mass += float(item[a_key_string])
-        return(total_mass / len(a_list_of_dicts) )
+        for ml in landings:
+            total_mass += ml.mass
+        return (total_mass / len(landings))
 
-    def check_hemisphere(coordinates: Point):
+    def check_hemisphere(ml: MeteoriteLanding) -> str:
         """
-        Given latitude and longitude in decimal notation, returns which hemispheres
-        those coordinates land in.
+        Given a meteorite landing's location (latitude and longitude in decimal notation),
+        returns which hemispheres those coordinates land in.
 
         Args:
-            coordinates: Latitude and longitude in decimal notation.
+            ml: A MeteoriteLanding object
 
         Returns:
-            location (string): Short string listing two hemispheres.
+            location: Short string listing two hemispheres.
         """
-        location = 'Northern' if (coordinates.latitude > 0) else 'Southern'
-        location = f'{location} & Eastern' if (coordinates.longitude > 0) else f'{location} & Western'
+        location = ''
+        if (ml.location.lat > 0):
+            location = 'Northern'
+        else:
+            location = 'Southern'
+        if (ml.location.long > 0):
+            location = f'{location} & Eastern'
+        else:
+            location = f'{location} & Western'
         return(location)
 
-    def count_classes(meteorite_landings: list[MeteoriteLanding]):
+    def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
         """
         ???
         """
         classes_observed = {}
-        for item in a_list_of_dicts:
-            if item[a_key_string] in classes_observed:
-                classes_observed[item[a_key_string]] += 1
-            else:
-                classes_observed[item[a_key_string]] = 1
+        for ml in landings:
+            if ml.class_name not in classes_observed:
+                classes_observed[ml.class_name] == 0
+            
+            classes_observed[ml.class_name] += 1
         return(classes_observed)
-
-    def main():
-        with open('Meteorite_Landings.json', 'r') as f:
-            ml_data = json.load(f)
-
-        print(compute_average_mass(ml_data['meteorite_landings'], 'mass (g)'))
-
-        for row in ml_data['meteorite_landings']:
-            print(check_hemisphere(float(row['reclat']), float(row['reclong'])))
-
-        print(count_classes(ml_data['meteorite_landings'], 'recclass'))
-
-    if __name__ == '__main__':
-        main()
-
-
-In general, your ``main()`` function usually does not need a docstring. It is
-good habit to write the ``main()`` function simply and clearly enough that it is
-self explanatory, with perhaps a few comments to help. If you do add a docstring
-to  the ``main()`` function, you may write a few short summary sentences but omit
-the Args and Returns sections.
 
 EXERCISE
 ~~~~~~~~
@@ -169,13 +152,44 @@ EXERCISE
 Write the missing docstring for the ``count_classes()`` function above.
 
 
+
+Let's now add a call to the ``count_classes`` function in your ``main()`` function in ``ml_data_analysis.py``
+
+.. code-block:: python3
+    :linenos:
+    :emphasize-lines: 13
+    :caption: ml_data_analysis.py
+
+    ...
+
+    def main():
+        with open('Meteorite_Landings_Simple.json', 'r') as f:
+            ml_data = json.load(f)
+
+        landings = [MeteoriteLanding(**ml) for ml in ml_data["meteorite_landings"]]
+
+        print(compute_average_mass(landings))
+
+        for ml in landings:
+            print(check_hemisphere(ml))
+            print(count_classes(landings))
+
+    if __name__ == '__main__':
+        main()
+
+In general, your ``main()`` function usually does not need a docstring. It is
+good habit to write the ``main()`` function simply and clearly enough that it is
+self explanatory, with perhaps a few comments to help. If you do add a docstring
+to  the ``main()`` function, you may write a few short summary sentences but omit
+the Args and Returns sections.
+
+
 EXERCISE
 ~~~~~~~~
 
-Open up the Python3 interactive interpreter. Import your ``ml_data_analysis.py``
-methods. Use the commands ``dir()`` and ``help()`` to find and read the docstrings
-that you wrote.
-
+Open up the Python3 interactive interpreter (Either ``uv run ipython`` or ``uv run python``).
+Import your helper functions from ``models.py`` and use the commands ``dir()`` and ``help()`` to
+find and read the docstrings that you wrote.
 
 
 Type Hints
@@ -198,7 +212,7 @@ Type hints should take form:
 
    def a_function(arg_name: arg_type) -> return_type:
        # code goes here
-       return(result)
+       return result
 
 In the above example, we are providing a single argument called ``arg_name`` that
 should be of type ``arg_type``. The expected return value should be ``return_type``.
@@ -211,28 +225,28 @@ Let's look at an example using a real function:
        return(result)
 
 
-Next, add type hints to the function definitions of the ``ml_data_analysis.py``
-script (only showing snippets below):
+.. Next, add type hints to the function definitions of the ``ml_data_analysis.py``
+.. script (only showing snippets below):
 
-.. code-block:: python3
+.. .. code-block:: python3
 
-   from typing import List
-   def compute_average_mass(a_list_of_dicts: List[dict], a_key_string: str) -> float:
+..    from typing import List
+..    def compute_average_mass(a_list_of_dicts: List[dict], a_key_string: str) -> float:
 
-.. code-block:: python3
+.. .. code-block:: python3
 
-   def check_hemisphere(latitude: float, longitude: float) -> str:
+..    def check_hemisphere(latitude: float, longitude: float) -> str:
 
-.. code-block:: python3
+.. .. code-block:: python3
 
-   def count_classes(a_list_of_dicts, a_key_string):  # what about this one?
+..    def count_classes(a_list_of_dicts, a_key_string):  # what about this one?
 
-In the first example above we need to include the line ``from typing import List``
-to get access to a special object called ``List`` (capital **L**).
-We use that to object to not only hint that ``a_list_of_dicts`` should be a list,
-but it also includes information about what type of list we expect - in this case
-it is a list of dictionaries. In Python3.8 you cannot do this with the normal
-``list`` (lowercase **l**) object.
+.. In the first example above we need to include the line ``from typing import List``
+.. to get access to a special object called ``List`` (capital **L**).
+.. We use that to object to not only hint that ``a_list_of_dicts`` should be a list,
+.. but it also includes information about what type of list we expect - in this case
+.. it is a list of dictionaries. In Python3.8 you cannot do this with the normal
+.. ``list`` (lowercase **l**) object.
 
 Although Python3 does not check or enforce types at run time, there are other
 tools that make use of type hints to check types at the time of development. For
@@ -242,11 +256,11 @@ hint suggests. In addition, there are Python3 libraries like *mypy* that can wra
 your Python3 programs and check / evaluate type hints as you go, provided errors
 where types don't match.
 
-.. warning::
+.. .. warning::
 
-   Be aware that there is some redundancy in the information contained in type hints
-   and in the docstrings. Be careful not to let them get out of sync as your code
-   evolves.
+..    Be aware that there is some redundancy in the information contained in type hints
+..    and in the docstrings. Be careful not to let them get out of sync as your code
+..    evolves.
 
 
 

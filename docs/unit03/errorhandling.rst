@@ -39,48 +39,25 @@ Why Do We Need Error Handling?
 Errors in Data
 --------------
 
-Imagine you have a data set of meteorite landings in a list-of-dictionaries 
-format, and that one of the descriptors for each meteorite was ``mass``. You
-might reasonable expect each ``mass`` to have a value that is a positive number.
+Consider our meteorite landings dataset and the functions that help use compute
+various propteries about that data.
 
-.. code-block:: python3 
+We have proven that they work as expect when we use valid data. But what happens
+when we introduce invalid data?
 
-   >>> from ml_data_analysis import compute_average_mass
-   >>> 
-   >>> data = [ {'mass': 10},
-   ...          {'mass': 20},
-   ...          {'mass': 40},
-   ...          {'mass': 30} ]
-   >>> 
-   >>> compute_average_mass(data, 'mass')
-   25.0
-
-We have been through the code in ``compute_average_mass`` many times at this
-point and we are pretty sure it is free of errors. But, what if the error comes 
-from the data?
-
-.. code-block:: python3 
-
-   >>> from ml_data_analysis import compute_average_mass
-   >>> 
-   >>> data = [ {'mass': 10},
-   ...          {'mass': 20},
-   ...          {'mass': 40},
-   ...          {'mass': None} ]
-   >>> 
-   >>> compute_average_mass(data, 'mass')
-   Traceback (most recent call last):
-     File "<stdin>", line 1, in <module>
-     File "/home/wallen/coe-332/working-with-json/ml_data_analysis.py", line 6, in compute_average_mass
-       total_mass += float(item[a_key_string])
-   TypeError: float() argument must be a string or a number, not 'NoneType'
-
+For example, you might reasonably expect each ``MeteoriteLanding.mass`` to be a positive, non-zero number.
+But there is nothing mechanism in the MeteoriteLanding code that prevents a negative integer from
+being used for that attribute.
+ 
+Furthurmore, we are given no guarantees about the integrity of our ``Meteorite_Landings.json`` data set.
+In the wild you will sometimes encounter datasets that are missing some properties or have values that
+do not conform to the expected type.
 
 At this point we need to make a choice. If we have input data which could be
 10s or 100s of thousands of lines (or more), do we want to go through it and pull
-out all the data points with null values for masses?
+out all the data points with null values for masses? (Very difficult but sometimes necessary)
 
-It would be better to update our code to anticipate this possible error and
+It would be better to update our code to anticipate these possible errors and
 handle it in a way such that our code does not crash and we still get a
 result that makes sense.
 
@@ -189,62 +166,52 @@ A few notes:
 * We can also leave off the ``as e`` part altogether if we don't need to reference
   the exception object in our code.
 
-
-
-Consider again our meteorite landing data, and the original ``compute_average_mass``
+Let's take another look at our meteorite landing data, and the original ``compute_average_mass``
 function:
 
 .. code-block:: python3
-   :linenos:
+    :linenos:
 
-   def compute_average_mass(a_list_of_dicts, a_key_string):
-       total_mass = 0.
-       for item in a_list_of_dicts:
-           total_mass += float(item[a_key_string])
-       return(total_mass / len(a_list_of_dicts) )
+    def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
+        total_mass = 0.
+        for ml in landings:
+            total_mass += ml.mass
+        return (total_mass / len(landings))
 
+It's entirely possible (and valid) for the ``landings`` argument to be an empty list! That means
+we would run into a ZeroDivisionError.
 
-
-And update it as follows:
-
+So we could rewrite with exception handling as follows:
 
 .. code-block:: python3
-   :linenos:
+    :linenos:
 
-   def compute_average_mass_new(a_list_of_dicts, a_key_string):
-       total_mass = 0.
-       num_of_valid_masses = 0
-       for item in a_list_of_dicts:
-           try: 
-               total_mass += float(item[a_key_string])
-               num_of_valid_masses += 1
-           except TypeError:
-               logging.warning(f'encountered non-float value {item[a_key_string]} in compute_average_mass')
-       return(total_mass / num_of_valid_masses)
+    def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
+        total_mass = 0.
+        for ml in landings:
+            total_mass += ml.mass
+            num_of_valid_masses += 1
+        
+        try:
+            return(total_mass / num_of_valid_masses)
+        except TypeError:
+            logging.warning(f'Attempted to comput the average mass of 0 meteorite landings')
+            return 0.
 
+This works great! But it's actually a little unnecessary. We could just add a guard statement instead:
 
-If a ``TypeError`` is raised in the ``try`` block, (i.e. beause ``item[a_key_string]``
-is not a float) then that exception is handled by
-executing the lines in the ``except`` block. In this case, a message is logged and
-the code continues to the next iteration of the for loop. If any other kind of error
-occurs, the program would raise the error and exit with a traceback message. Here,
-we are currently only handling ``TypeErrors``. 
+.. code-block:: python3
+    :linenos:
+    :emphasize-lines: 2-3
 
-With this modified function, we can execute our lines of code from above:
-
-.. code-block:: python3 
-
-   >>> from ml_data_analysis import compute_average_mass_new
-   >>> 
-   >>> data = [ {'mass': 10},
-   ...          {'mass': 20},
-   ...          {'mass': 40},
-   ...          {'mass': None} ]
-   >>> 
-   >>> compute_average_mass_new(data, 'mass')
-   WARNING: encountered non-float value None in compute_average_mass_new
-   23.333333333333332
-
+    def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
+        if len(landings) == 0: # Guard statement
+            return 0
+        
+        total_mass = 0.
+        for ml in landings:
+            total_mass += ml.mass
+        return (total_mass / len(landings))
 
 Exception Hierarchy
 -------------------

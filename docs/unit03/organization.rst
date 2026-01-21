@@ -390,7 +390,7 @@ to instruct pydantic on how to construct the input data. We will learn more abou
 in a later unit. The ``model_validator`` decorator is a function that will be run before the model class
 is instantiated. It allows us to manipulate the incoming data, run validation logic, and much more.
 
-If you're observent, you may have noticed that we completely ignored the ``"Geolocation"`` property in
+If you're observant, you may have noticed that we completely ignored the ``"Geolocation"`` property in
 the data. This is duplicate data on each object that we do not need. Pydantic will safely ignore any additional
 properties unless you tell it otherwise.
 

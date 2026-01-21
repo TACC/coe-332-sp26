@@ -29,11 +29,11 @@ def compute_average_mass(landings: list[MeteoriteLandings]) -> float:
 
 def check_hemisphere(ml: MeteoriteLanding) -> str:
     location = ''
-    if (ml.lat > 0):
+    if (ml.location.lat > 0):
         location = 'Northern'
     else:
         location = 'Southern'
-    if (ml.long > 0):
+    if (ml.location.long > 0):
         location = f'{location} & Eastern'
     else:
         location = f'{location} & Western'

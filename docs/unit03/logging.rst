@@ -195,90 +195,70 @@ they are easily extracted.
 EXERCISE
 ~~~~~~~~
 
-Given the Meteorite Landings analysis script we have been working on, add some
-logging throughout the script, focusing on DEBUG and ERROR messages.
+Given the Meteorite Landings analysis script and associated functions we have been working on, add some
+logging, focusing on DEBUG and ERROR messages.
 
 
 .. code-block:: python3
    :linenos:
 
-   #!/usr/bin/env python3
-   import json
-   from typing import List
+   def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
+        """
+        Iterates through a list of meteorite landing objects, adds their masses together
+        and returns that sum divided by the total number or landings
 
-   def compute_average_mass(a_list_of_dicts: List[dict], a_key_string: str) -> float:
-       """
-       Iterates through a list of dictionaries, pulling out values associated with
-       a given key. Returns the average of those values.
+        Args:
+            landings: A list of meteorite landing objects
 
-       Args:
-           a_list_of_dicts (list): A list of dictionaries, each dict should have the
-                                   same set of keys.
-           a_key_string (string): A key that appears in each dictionary associated
-                                  with the desired value (will enforce float type).
+        Returns:
+            result: Average value.
+        """
+        total_mass = 0.
+        for ml in landings:
+            total_mass += ml.mass
+        return (total_mass / len(landings))
 
-       Returns:
-           result (float): Average value.
-       """
-       total_mass = 0.
-       for item in a_list_of_dicts:
-           total_mass += float(item[a_key_string])
-       return(total_mass / len(a_list_of_dicts) )
+    def check_hemisphere(ml: MeteoriteLanding) -> str:
+        """
+        Given a meteorite landing's location (latitude and longitude in decimal notation),
+        returns which hemispheres those coordinates land in.
 
-   def check_hemisphere(latitude: float, longitude: float) -> float:
-       """
-       Given latitude and longitude in decimal notation, returns which hemispheres
-       those coordinates land in.
-   
-       Args:
-           latitude (float): Latitude in decimal notation.
-           longitude (float): Longitude in decimal notation.
-   
-       Returns:
-           location (string): Short string listing two hemispheres.
-       """
-       location = 'Northern' if (latitude > 0) else 'Southern'
-       location = f'{location} & Eastern' if (longitude > 0) else f'{location} & Western'
-       return(location)
+        Args:
+            ml: A MeteoriteLanding object
 
-   def count_classes(a_list_of_dicts: List[dict], a_key_string: str) -> dict:
-       """
-       Iterates through a list of dictionaries, and pulls out the value associated
-       with a given key. Counts the number of times each value occurs in the list of
-       dictionaries and returns the result.
+        Returns:
+            location: Short string listing two hemispheres.
+        """
+        location = ''
+        if (ml.location.lat > 0):
+            location = 'Northern'
+        else:
+            location = 'Southern'
+        if (ml.location.long > 0):
+            location = f'{location} & Eastern'
+        else:
+            location = f'{location} & Western'
+        return(location)
 
-       Args:
-           a_list_of_dicts (list): A list of dictionaries, each dict should have the
-                                   same set of keys.
-           a_key_string (string): A key that appears in each dictionary associated
-                                  with the desired value.
+    def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
+        """
+        Iterates through a list of meteorite landing object and adds each class name
+        as a key to a dictionary where the value of each key is the number of times
+        this class appears in the dataset
 
-       Returns:
-           classes_observed (dict): Dictionary of class counts.
-       """
-       classes_observed = {}
-       for item in a_list_of_dicts:
-           if item[a_key_string] in classes_observed:
-               classes_observed[item[a_key_string]] += 1
-           else:
-               classes_observed[item[a_key_string]] = 1
-       return(classes_observed)
+        Args:
+            landings: A list of MeteoriteLanding objects
 
-   def main():
-       with open('Meteorite_Landings.json', 'r') as f:
-           ml_data = json.load(f)
-
-       print(compute_average_mass(ml_data['meteorite_landings'], 'mass (g)'))
-
-       for row in ml_data['meteorite_landings']:
-           print(check_hemisphere(float(row['reclat']), float(row['reclong'])))
-
-       print(count_classes(ml_data['meteorite_landings'], 'recclass'))
-
-   if __name__ == '__main__':
-       main()
-
-
+        Returns:
+            classes_observed: Dictionary of class counts.
+        """
+        classes_observed = {}
+        for ml in landings:
+            if ml.class_name not in classes_observed:
+                classes_observed[ml.class_name] == 0
+            
+            classes_observed[ml.class_name] += 1
+        return(classes_observed)
 
 Additional Resources
 --------------------
