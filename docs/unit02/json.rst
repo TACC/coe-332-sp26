@@ -27,8 +27,8 @@ The JSON format is defined recursively from a set of basic types, as follows:
 
 * Primitive types: including numeric types (integers and floats), strings, and
   booleans,
-* Objects: (also called "dictionaries") structured as ``name: value`` pairs, and 
-* Arrays: (also called "lists"). 
+* Objects: (also called "dictionaries") structured as ``name: value`` pairs using ``{ }``, and 
+* Arrays: (also called "lists") structured as a sequence of items using ``[ ]``. 
 
 The following are basic example of JSON objects: 
 
@@ -135,7 +135,6 @@ EXERCISE
 Plug this file (or some of the above samples) into an online JSON validator
 (e.g. `JSONLint <https://jsonlint.com/>`_). Try making manual changes to some of
 the entries to see what breaks the JSON format.
-
 
 
 Read JSON into a Python3 Script

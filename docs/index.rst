@@ -15,3 +15,9 @@ provide a web-accessible interface to their system.
 
    unit01/overview
    unit02/overview
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Homeworks:
+
+   homework/homework01

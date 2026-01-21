@@ -65,7 +65,8 @@ the link was created:
 The name ``origin`` is a local nickname for your remote repository. We could use
 something else if we wanted to, but ``origin`` is by far the most common choice.
 
-
+Configuring SSH keys
+~~~~~~~~~~~~~~~~~~~~
 Another key step is to set up SSH keys for authentication. GitHub no longer
 allows simple username / password authentication from the command line. To set
 up SSH keys, click on:
@@ -135,6 +136,45 @@ you can expect to follow the changes with the commands:
    [coe332-vm]$ git push
 
 
+Configuring Personal Access Tokens (PATs)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First, configure git to use a credential helper: 
+
+.. code-block:: console 
+
+   [coe332-vm]$ git config --global credential.helper store
+
+
+Go to GitHub and create a new Personal Access Token:
+
+1. Navigate to https://github.com and login. 
+2. Click your avatar (upper-right corner) and click Settings 
+3. Select Developer settings (bottom-left corner)
+4. Select Personal access tokens -> Tokens (classic) from the left nav bar. 
+5. Click Generate New Token -> Generate New Token (classic)
+6. Create a new token with at least enough permission to read and write repositories. 
+
+Back on your student VM, issue a git command in your repository, e.g., 
+
+.. code-block:: console
+   
+   [coe332-vm]$ git pull 
+   Username for 'https://github.com': ...
+   Password for 'https://<username>@github.com':
+
+You will be prompted for your username and password. For the password, paste the personal access 
+token that you just generated. This should allow the ``git`` command to proceed (if it doesn't there 
+was something wrong with your token).
+
+Now, try the same ``git`` command again, e.g., 
+
+.. code-block:: console
+   
+   [coe332-vm]$ git pull 
+   Already up to date.
+
+This time, the command should run without prompting you for your password. 
 
 Clone the Repository
 --------------------

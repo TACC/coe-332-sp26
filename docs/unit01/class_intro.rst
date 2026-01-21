@@ -23,6 +23,7 @@ Class Introduction
 
 
 **Teaching Assistant:** Lukas Taus (l.taus@utexas.edu) 
+ * TA Office hour: Monday, 2 pm - 3pm at POB 3SEi4B.
 
 
 **Important Links:**
