@@ -1,0 +1,276 @@
+Error Handling
+==============
+
+Error handling is an important part of data science. Even syntactically-sound
+code can run into errors if the input data is messy. Being able to understand
+error messages, anticipate where errors might happen, and program defensively 
+against errors will make your code more robust. After working through this 
+module, students should be able to:
+
+
+* Anticipate where and what types of errors might occur in their code
+* Read traceback statements and identify exceptions
+* Write code blocks to catch and handle exceptions
+
+
+
+Why Do We Need Error Handling?
+------------------------------
+
+#. Prevents program from crashing if an error occurs
+    * If an error occurs in a program, we don't want the program to unexpectedly
+      crash on the user. Instead, error handling can be used to notify the user of
+      why the error occurred and gracefully exit the process that caused the error.
+
+#. Saves time debugging errors
+    * Following reason #1, having the program display an error instead of immediately
+      crashing will save a lot of time when debugging errors.
+    * The logic inside the error handler can be updated to display useful information
+      for the developer, such as the code traceback, type of error, etc.
+
+#. Helps define requirements for the program
+    * If the program crashes due to bad input, the error handler could notify the user
+      of why the error occurred and define the requirements and constraints of the program.
+
+
+`Source <https://betterprogramming.pub/handling-errors-in-python-9f1b32952423>`_
+
+
+Errors in Data
+--------------
+
+Consider our meteorite landings dataset and the functions that help use compute
+various propteries about that data.
+
+We have proven that they work as expect when we use valid data. But what happens
+when we introduce invalid data?
+
+For example, you might reasonably expect each ``MeteoriteLanding.mass`` to be a positive, non-zero number.
+But there is nothing mechanism in the MeteoriteLanding code that prevents a negative integer from
+being used for that attribute.
+ 
+Furthurmore, we are given no guarantees about the integrity of our ``Meteorite_Landings.json`` data set.
+In the wild you will sometimes encounter datasets that are missing some properties or have values that
+do not conform to the expected type.
+
+At this point we need to make a choice. If we have input data which could be
+10s or 100s of thousands of lines (or more), do we want to go through it and pull
+out all the data points with null values for masses? (Very difficult but sometimes necessary)
+
+It would be better to update our code to anticipate these possible errors and
+handle it in a way such that our code does not crash and we still get a
+result that makes sense.
+
+
+Understanding Exceptions
+------------------------
+
+When errors do occur, Python3 prints a **traceback** message to help you pinpoint
+where the specific **exception** occurred. With traceback messages, you generally
+want to read the bottom line first, which identifies the specific exception, and
+then start reading up to find out where in the code (i.e. in what function) the
+exception occurred. For most errors, you can probably get away with only looking
+at the last three or so lines of the traceback message.
+
+At first glance, exceptions and traceback messages may seem to be undecipherable, 
+but understanding that there are a finite number of built in exceptions and each
+named exception actually is a pretty useful hint to where the error occurred. 
+Consider some of the following exceptions:
+
+.. code-block:: python3
+
+   >>> 10 * (1/0)
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+   ZeroDivisionError: division by zero
+
+   >>> 4 + spam*3
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+   NameError: name 'spam' is not defined
+
+   >>> '2' + 2
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+   TypeError: can only concatenate str (not "int") to str
+
+ZeroDivisionError, NameError, and TypeError are somewhat self explanatory when
+you see when they are raised. Knowing what circumstances can cause a built-in
+exception to occur (e.g. NameErrors are raised when a name is not found) is the
+first step toward identifying the cause and the solution. Some common situations
+that generate exceptions are:
+
+* Trying to open a file that does not exist raises a ``FileNotFoundError``.
+* Trying to divide by zero raises a ``ZeroDivisionError``.
+* Trying to access a list at an index beyond its length raises an ``IndexError``.
+* Trying to use an object of the wrong type in a function raises a ``TypeError`` (for example,
+  trying to call ``json.dumps()`` with an object that is not of type ``str``).
+* Trying to use an object with the wrong kind of value in a function raises a ``ValueError``
+  (for example, calling ``int('abc')``).
+* Trying to access a non-existent attribute on an object raises an ``AttributeError`` (a special
+  case is accessing a null/uninitialized object, resulting in the dreaded
+  ``AttributeError: 'NoneType' object has no attribute 'foo'`` error).
+
+A list of all built-in exceptions that could occur can be found `here <https://docs.python.org/3/library/exceptions.html>`_.
+
+.. note:: 
+
+    Note that syntax errors stand apart as exceptions that can't be handled at runtime:
+
+.. code-block:: python3
+
+   >>> print 'Hello, world!'
+   File "<stdin>", line 1
+     print 'Hello, world!'
+           ^
+   SyntaxError: Missing parentheses in call to 'print'. Did you mean print('Hello, world!')?
+
+
+
+Handling Exceptions
+-------------------
+
+We can use a strategy called *exception handling* to prevent our program from
+crashing if it encounters an exception during runtime. The specific statements
+we use for this in Python3 are ``try`` and ``except``. In general, it follows 
+the format:
+
+.. code-block:: python
+
+    try:
+        # execute some statements that could raise an exception...
+        f(x, y, z)
+    except ExceptionType1 as e:
+        # do something if the exception was of type ExceptionType1...
+    except ExceptionType2 as e:
+        # do something if the exception was of type ExceptionType2...
+
+    # . . . additional except blocks . . .
+
+    finally:
+        # do something regardless of whether an exception was raised or not.
+
+A few notes:
+
+* If a statement(s) within the ``try`` block does not raise an exception, the
+  ``except`` blocks are skipped.
+* If a statement within the ``try`` block does raise an exception, Python looks
+  at the ``except`` blocks for the first one matching the type of the exception
+  raised and executes that block of code.
+* The ``finally`` block is optional but it executes regardless of whether an
+  exception was raised by a statement or not.
+* The ``as e`` clause puts the exception object into a variable (``e``) that we
+  can use.
+* The use of ``e`` was arbitrary; we could choose to use any other valid variable
+  identifier.
+* We can also leave off the ``as e`` part altogether if we don't need to reference
+  the exception object in our code.
+
+Let's take another look at our meteorite landing data, and the original ``compute_average_mass``
+function:
+
+.. code-block:: python3
+    :linenos:
+
+    def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
+        total_mass = 0.
+        for ml in landings:
+            total_mass += ml.mass
+        return (total_mass / len(landings))
+
+It's entirely possible (and valid) for the ``landings`` argument to be an empty list! That means
+we would run into a ZeroDivisionError.
+
+So we could rewrite with exception handling as follows:
+
+.. code-block:: python3
+    :linenos:
+
+    def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
+        total_mass = 0.
+        for ml in landings:
+            total_mass += ml.mass
+            num_of_valid_masses += 1
+        
+        try:
+            return(total_mass / num_of_valid_masses)
+        except TypeError:
+            logging.warning(f'Attempted to comput the average mass of 0 meteorite landings')
+            return 0.
+
+This works great! But it's actually a little unnecessary. We could just add a guard statement instead:
+
+.. code-block:: python3
+    :linenos:
+    :emphasize-lines: 2-3
+
+    def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
+        if len(landings) == 0: # Guard statement
+            return 0
+        
+        total_mass = 0.
+        for ml in landings:
+            total_mass += ml.mass
+        return (total_mass / len(landings))
+
+Exception Hierarchy
+-------------------
+
+Exceptions form a class hierarchy with the base ``Exception`` class being at the root. So,
+for example:
+
+* ``FileNotFoundError`` is a type of ``OSError`` as is ``PermissionError``, which is raised in case
+  the attempted file access is not permitted by the OS due to lack of permissions.
+* ``ZeroDivisionError`` and ``OverflowError`` are instances of ``ArithmeticError``, the latter
+  being raised whenever the result of a calculation exceeds the limits of what can be represented
+  (try running ``2.**5000`` in a Python shell).
+* Every built-in Python exception is of type ``Exception``.
+
+Therefore, we could use any of the following to deal with a ``FileNotFoundError``:
+
+* ``except FileNotFoundError``
+* ``except OSError``
+* ``except Exception``
+
+
+Here are some best practices to keep in mind for handling exceptions:
+
+* Put a minimum number of statements within a ``try`` block so that you can detect which
+  statement caused the error.
+* Similarly, put the most specific exception type in the ``except`` block that is appropriate
+  so that you can detect exactly what went wrong. Using ``except Exception...`` should
+  be seen as a last resort
+  because an ``Exception`` could be any kind of error.
+
+
+See the resources below for tips on building more complicated try-except statements.
+
+
+EXERCISE
+~~~~~~~~
+
+Use ``try`` and ``except`` to perform exception handling in the ``compute_average_mass``
+function.
+
+* Handle the error when one of the masses in the original data cannot be converted
+  into a float. Carefully consider how that should be handled. Should you ignore
+  that meteor when you compute the average? Should you treat the value as ``0``?
+  Something else?
+* Handle the error when a user provides a key string that does not exist in the 
+  data structure. I.e., if a user provides the key string ``mass``, but the data contains
+  ``mass (g)``, make the function return a useful error message instead of crashing.
+
+Additional Resources
+--------------------
+
+* `Python 3 Error Handling <https://docs.python.org/3/tutorial/errors.html>`_
+* `Python 3 Exception Class <https://docs.python.org/3/library/exceptions.html>`_
+
+
+
+
+
+
+
+
+
