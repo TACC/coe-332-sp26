@@ -17,7 +17,7 @@ Here are the overall requirements for the repository:
 * Must contain multiple commits (not all one commit) with reasonable commit
   messages
 * Must be pushed to GitHub, must be private, and **must be shared with the following GitHub users**
-  ``joestubbs``, ``nathandf``, ``ubik10``, ``(TA's Github Account TBD)``, 
+  ``joestubbs``, ``nathandf``, ``ubik10``, ``Kunuki``, 
 
 
 Here are the requirements for the ``homework01`` directory: 
