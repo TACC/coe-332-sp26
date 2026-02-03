@@ -22,3 +22,4 @@ provide a web-accessible interface to their system.
    :caption: Homeworks:
 
    homework/homework01
+   homework/homework02
