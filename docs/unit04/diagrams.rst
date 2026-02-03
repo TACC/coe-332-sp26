@@ -6,7 +6,7 @@ of this module, the student should be able to:
 
   * Explain the basic utility of diagrams for software design
   * Describe the differences between structural diagrams and behavioral diagrams. 
-  * Create different types of structural and/or behavioral diagrams for their flask-based API system.
+  * Create different types of structural and/or behavioral diagrams for their fast-api-based API system.
 
 As a software system grows in its size and complexity, it becomes increasingly difficult to describe in 
 written text. Diagrams help us visualize the components of a software system, allowing us to provide a
@@ -116,7 +116,7 @@ Here is an example description of a C4 UML Plant diagram describing a hypothetic
     Person(scientist, Scientist, "A scientist interested in studying sun spots")
 
     System_Boundary(c1, "Sun Spots Analysis Platform") {
-        Container(api, "RESTful API", "Python, Flask", "Provides endpoints for retrieving data and launching analysis jobs.")
+        Container(api, "RESTful API", "Python, Fast API", "Provides endpoints for retrieving data and launching analysis jobs.")
         Container(worker, "Worker", "Python worker, docker container", "Receives jobs from the task queue, and works them to completion.")
         ContainerDb(database, "Redis", "Redis Database", "Stores sun spots dataset and information and jobs in the system.")
         Container(task_queue, "Task Queue", "Redis Task Queue", "Stores pending jobs in the system")
