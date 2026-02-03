@@ -145,13 +145,13 @@ The basic usage of pylint is from the command line:
 
 .. code-block:: console
 
-  [coe332-vm]$ pylint /path/to/file
+  [coe332-vm]$ uv run pylint /path/to/file
 
 or
 
 .. code-block:: console
 
-  [coe332-vm]$ pylint /path/to/package
+  [coe332-vm]$ uv run pylint /path/to/package
 
 
 Let's try this with the ``json`` module and package from the standard library? 
@@ -168,14 +168,14 @@ We can call pylint on the specific file:
 
 .. code-block:: console
 
-  [coe332-vm]$ pylint /usr/lib/python3.12/json/__init__.py
+  [coe332-vm]$ uv run pylint /usr/lib/python3.12/json/__init__.py
   
 
 or on the entire package: 
 
 .. code-block:: console
 
-  [coe332-vm]$ pylint /usr/lib/python3.12/json
+  [coe332-vm]$ uv run pylint /usr/lib/python3.12/json
   
 
 We get output messages like the following: 
@@ -209,7 +209,7 @@ also pass ``--reports=y`` to generate a set of metrics, e.g.,
 
 .. code-block:: console
 
-  pylint /usr/lib/python3.12/json/__init__.py --reports=y
+  uv run pylint /usr/lib/python3.12/json/__init__.py --reports=y
 
   Report
   ======
