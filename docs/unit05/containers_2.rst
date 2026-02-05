@@ -29,7 +29,7 @@ and testing an application interactively within a running Docker container.
 
 .. note::
 
-   We recommend doing this on your Jetstream VMs. But, one of the most
+   We recommend doing this on your VMs. But, one of the most
    important features of Docker is that it is platform agnostic. These steps
    could be done anywhere Docker is installed.
 
@@ -55,8 +55,9 @@ we can just make an empty one with no contents for now.
    [coe332-vm]$ pwd
    /home/ubuntu/coe-332/docker-exercise
    [coe332-vm]$ touch Dockerfile
-   [coe332-vm]$ wget https://raw.githubusercontent.com/tacc/coe-332-sp25/main/docs/unit05/scripts/Meteorite_Landings.json
-   [coe332-vm]$ wget https://raw.githubusercontent.com/tacc/coe-332-sp25/main/docs/unit05/scripts/ml_data_analysis.py
+   [coe332-vm]$ wget https://raw.githubusercontent.com/tacc/coe-332-sp26/main/docs/unit05/scripts/Meteorite_Landings.json
+   [coe332-vm]$ wget https://raw.githubusercontent.com/tacc/coe-332-sp26/main/docs/unit05/scripts/ml_data_analysis.py
+   [coe332-vm]$ wget https://raw.githubusercontent.com/tacc/coe-332-sp26/main/docs/unit05/scripts/models.py
    [coe332-vm]$ ls
    Dockerfile  Meteorite_Landings.json  ml_data_analysis.py
 
@@ -82,13 +83,13 @@ code for the first time:
 
 We can work through these questions by performing an **interactive installation**
 of our Python script. Our development environment (e.g. the Jetstream VM)
-is a Linux server running Ubuntu 24.04 and Python 3.12.3. We know our code works there,
+is a Linux server running Ubuntu 24.04 and Python 3.14. We know our code works there,
 so that is how we will containerize it. Use ``docker run`` to interactively attach to a fresh
-`Python 3.12 container <https://hub.docker.com/_/python/tags?name=3.12>`_.
+`Python 3.14 container <https://hub.docker.com/_/python/tags?name=3.14>`_.
 
 .. code-block:: console
 
-   [coe332-vm]$ docker run --rm -it -v $PWD:/code python:3.12 /bin/bash
+   [coe332-vm]$ docker run --rm -it -v $PWD:/code python:3.14 /bin/bash
    root@7ad568453e0b:/#
 
 Here is an explanation of the options:
@@ -115,64 +116,87 @@ Check for and Install Necessary Dependencies
 The first thing we will typically do is check if our dependenices are available
 in the container. If they are not available, we will use a package manager to 
 install them. To run our Meterorite Landing code, we just need Python3 and
-a few simple Python libraries, which can be managed through pip3:
+a few simple Python libraries, which can be managed through ``uv``.
 
 .. code-block:: console
 
    root@edd3bf9e45ab:/# which python3
    /usr/local/bin/python3
    root@edd3bf9e45ab:/# python3 --version
-   Python 3.12.9
+   Python 3.14
 
-   root@edd3bf9e45ab:/# which pip3
-   /usr/local/bin/pip3
-   root@edd3bf9e45ab:/# pip3 --version
-   pip 24.3.1 from /usr/local/lib/python3.12/site-packages/pip (python 3.12)
-
-
-Python3 and pip3 are available in this container (as expected). Let us now install
-the non-standard Python library 'pytest' so we can run our unit tests. To install
-pytest, perform the following:
-
+Python3 is available in this container (as expected). But what about ``uv``? Run ``uv``
+in your terminal and you will see output like the following:
 
 .. code-block:: console
 
-   root@edd3bf9e45ab:/# pip3 install pytest
-   Collecting pytest
-     Downloading pytest-8.3.4-py3-none-any.whl.metadata (7.5 kB)
+   root@91b9c9caa283:/# uv
+   bash: uv: command not found
+
+We can see that ``uv`` is not installed in this (or any) python base imgae by default. Let's
+install in our container just as we did at the beginning of the course
+
+Run the following inside of your container to install ``uv``
+
+.. code-block:: console  
+
+   root@91b9c9caa283:/# curl -LsSf https://astral.sh/uv/install.sh | sh
+
+and make sure that we add it to our **$PATH**
+
+.. code-block:: console  
+
+   root@91b9c9caa283:/# source $HOME/.local/bin/env
+
+Run ``uv help`` to ensure you have correctly installed it
+
+.. code-block:: console  
+
+   root@91b9c9caa283:/# uv help
+   An extremely fast Python package manager.
+
+   Usage: uv [OPTIONS] <COMMAND>
+
+   Commands:
+   auth                       Manage authentication
+   run                        Run a command or script
+   init                       Create a new project
    ...
-   Successfully installed pytest-8.3.4
 
-   root@edd3bf9e45ab:/# pip3 list
-   Package   Version
-   --------- -------
-   iniconfig 2.0.0
-   packaging 24.2
-   pip       24.3.1
-   pluggy    1.5.0
-   pytest    8.3.4
+    
+Now that ``uv`` is install, let's initialize a uv environment in our ``/code`` directory
+and install the libraries our ``ml_data_analysis.py`` script depends on.
 
+.. code-block:: console  
 
-.. note::
+   root@91b9c9caa283:/# uv init ./code
 
-   If Python3 or pip3 were not available, we would use a package manager to install
-   them, or we would pick a different base image that already has them installed.
-   This choice is often dependent on the project and what other dependencies there
-   may be.
+``cd`` into the ``./code`` directory.
 
-   .. code-block:: console
+.. code-block:: console  
 
-      root@edd3bf9e45ab:/# apt-get update
-      root@edd3bf9e45ab:/# apt-get install python3
-      root@edd3bf9e45ab:/# apt-get install python3-pip
-      root@edd3bf9e45ab:/# python3 --version
-      Python 3.12.9
-      root@edd3bf9e45ab:/# pip3 install pytest
-      Collecting pytest
-        Downloading pytest-8.3.4-py3-none-any.whl.metadata (7.5 kB)
-      ...
-      Successfully installed pytest-8.3.4
+   root@91b9c9caa283:/# cd ./code
 
+Add the packages
+
+.. code-block:: console  
+
+   root@91b9c9caa283:/code# uv add pydantic pytest
+
+Now that we have set up the container with the same packages as our VM, Let's run
+our ml_data_analysis script and see if it works:
+
+.. code-block:: console  
+
+   root@91b9c9caa283:/code# uv run python ml_data_analysis.py 
+   83857.3
+   Northern & Eastern
+   Northern & Eastern
+   Northern & Western
+   Northern & Western
+   ...
+
+It works!
 
 .. warning::
 
@@ -184,9 +208,6 @@ pytest, perform the following:
 
 Install and Test Your Code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
 
 At this time, we should make a small edit to the code that will make it a little
 more flexible and more amenable to running in a container. Instead of hard coding
@@ -218,29 +239,6 @@ And change the ``with open...`` statements to these, as appropriate:
       root@edd3bf9e45ab:/# apt-get update
       root@edd3bf9e45ab:/# apt-get install vim
 
-   
-
-Since we are using a simple Python script, there is not a difficult install
-process. However, we can make it executable and add it to the user's `PATH`.
-
-.. code-block:: console
-
-   root@7ad568453e0b:/# cd /code
-   root@7ad568453e0b:/code# chmod +rx ml_data_analysis.py
-   root@7ad568453e0b:/code# export PATH=/code:$PATH
-
-Now test with the following:
-
-.. code-block:: console
-
-   root@7ad568453e0b:/code# cd /home
-   root@7ad568453e0b:/home# cp /code/Meteorite_Landings.json .
-   root@7ad568453e0b:/home# ml_data_analysis.py Meteorite_Landings.json
-   83857.3
-   Northern & Eastern
-   ...etc
-
-
 We now have functional versions of our script 'installed' in this container.
 Now would be a good time to execute the `history` command to see a record of the
 build process. When you are ready, type `exit` to exit the container and we can
@@ -260,12 +258,12 @@ The FROM Instruction
 
 We can use the FROM instruction to start our new image from a known base image.
 This should be the first line of our Dockerfile. In our scenario, we want to
-match our development environment with Python3.12. We know our code works in
+match our development environment with Python3.14. We know our code works in
 that environment, so that is how we will containerize it for others to use:
 
 .. code-block:: dockerfile
 
-   FROM python:3.12 
+   FROM python:3.14 
 
 Base images typically take the form `os:version`. Avoid using the '`latest`'
 version; it is hard to track where it came from and the identity of '`latest`'
@@ -281,13 +279,23 @@ The RUN Instruction
 ~~~~~~~~~~~~~~~~~~~
 
 We can install updates, install new software, or download code to our image by
-running commands with the RUN instruction. In our case, our only dependencies
-were Python3 and the "pytest" library. So, we will use a RUN instruction to
+running commands with the RUN instruction. In our case, our dependencies
+were Python3 (built into our base image), ``uv``, ``pydantic``, and ``pytest`` (not using this yet). So, we will use a RUN instruction to
 install anything that is missing.
 
 .. code-block:: dockerfile
 
-   RUN pip3 install pytest==8.3.4
+   # Install uv
+   RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # Initialize a uv project
+   RUN uv init /code
+
+   # NOTE: The WORKDIR instruction sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile
+   WORKDIR /code
+
+   RUN uv add pydantic pytest
+
 
 Each RUN instruction creates an intermediate image (called a 'layer'). Too many
 layers makes the Docker image less performant, and makes building less
@@ -312,17 +320,6 @@ instructions:
 
    COPY ml_data_analysis.py /code/ml_data_analysis.py
 
-
-And, don't forget to perform another RUN instruction to make the script
-executable:
-
-.. code-block:: dockerfile
-
-   RUN chmod +rx /code/ml_data_analysis.py
-
-
-
-
 The ENV Instruction
 ~~~~~~~~~~~~~~~~~~~
 
@@ -345,7 +342,7 @@ The contents of the final Dockerfile should look like:
 .. code-block:: dockerfile
    :linenos:
 
-   FROM python:3.12
+   FROM python:3.14
 
    RUN pip3 install pytest==8.3.4
 
