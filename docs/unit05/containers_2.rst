@@ -327,6 +327,8 @@ instructions:
 
    COPY ml_data_analysis.py /code/ml_data_analysis.py
 
+   COPY models.py /code/models.py
+
 The ENV Instruction
 ~~~~~~~~~~~~~~~~~~~
 
@@ -369,6 +371,8 @@ The contents of the final Dockerfile should look like:
    RUN uv add pydantic pytest
 
    COPY ml_data_analysis.py /code/ml_data_analysis.py
+
+   COPY models.py /code/models.py
 
 
 Build the Image
@@ -433,13 +437,8 @@ because the code is already in the container:
 .. code-block:: console
 
    [coe332-vm]$ docker run --rm -it username/ml_data_analysis:1.0 /bin/bash
-   ...
-   root@c5cf05edddcd:/# ls /code
-   ml_data_analysis.py
-   root@c5cf05edddcd:/# cd /home
-   root@c5cf05edddcd:/home# pwd
-   /home
-   root@c5cf05edddcd:/home# ml_data_analysis.py Meteorite_Landings.json
+
+   root@c5cf05edddcd:/code# uv run ml_data_analysis.py Meteorite_Landings.json
    Traceback (most recent call last):
      File "/code/ml_data_analysis.py", line 96, in <module>
        main()
