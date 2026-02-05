@@ -281,12 +281,19 @@ The RUN Instruction
 We can install updates, install new software, or download code to our image by
 running commands with the RUN instruction. In our case, our dependencies
 were Python3 (built into our base image), ``uv``, ``pydantic``, and ``pytest`` (not using this yet). So, we will use a RUN instruction to
-install anything that is missing.
+install anything that is missing. The containerized version of ``uv`` is a little different that our local installation. Document can be found
+`here <https://docs.astral.sh/uv/guides/integration/docker/#installing-uv>`_ 
 
 .. code-block:: dockerfile
 
-   # Install uv
-   RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+   # Download the latest installer
+   ADD https://astral.sh/uv/install.sh /uv-installer.sh
+
+   # Run the installer then remove it
+   RUN sh /uv-installer.sh && rm /uv-installer.sh
+
+   # Ensure the installed binary is on the `PATH`
+   ENV PATH="/root/.local/bin/:$PATH"
 
    # Initialize a uv project
    RUN uv init /code
@@ -344,13 +351,24 @@ The contents of the final Dockerfile should look like:
 
    FROM python:3.14
 
-   RUN pip3 install pytest==8.3.4
+   # Download the latest installer
+   ADD https://astral.sh/uv/install.sh /uv-installer.sh
+
+   # Run the installer then remove it
+   RUN sh /uv-installer.sh && rm /uv-installer.sh
+
+   # Ensure the installed binary is on the `PATH`
+   ENV PATH="/root/.local/bin/:$PATH"
+
+   # Initialize a uv project
+   RUN uv init /code
+
+   # NOTE: The WORKDIR instruction sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile
+   WORKDIR /code
+
+   RUN uv add pydantic pytest
 
    COPY ml_data_analysis.py /code/ml_data_analysis.py
-
-   RUN chmod +rx /code/ml_data_analysis.py
-
-   ENV PATH="/code:$PATH"
 
 
 Build the Image
