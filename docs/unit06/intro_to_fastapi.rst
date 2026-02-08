@@ -15,7 +15,7 @@ module, students should be able to:
 
 
 FastAPI is a Python library and framework for building web servers. Some of the
-defining characteristics of Flask make it a good fit for this course:
+defining characteristics of FastAPI make it a good fit for this course:
 
 * FastAPI is small and lightweight - relatively easy to use and get setup initially
 * FastAPI is robust - a great fit for REST APIs and **microservices**
@@ -92,7 +92,7 @@ Run the FastAPI App
 -------------------
 
 There are a few options when starting the FastAPI app. For now, we recommend you
-start your Flask application using the ``fastapi dev`` command, specifying the name 
+start your FastAPI application using the ``fastapi dev`` command, specifying the name 
 of the Python file (in our case ``main.py``).
 
 .. code-block:: console
@@ -146,7 +146,7 @@ Next we can try to talk to the server using ``curl``. Note this line:
      *    server   Server started at http://127.0.0.1:8000
 
 That tells us our server is listening on the ``localhost`` - ``127.0.0.1``, and
-on the default Flask port, port ``8000``.
+on the default FastAPI port, port ``8000``.
 
 Ports Basics
 ~~~~~~~~~~~~
@@ -199,11 +199,11 @@ Try the following, for example:
 Make a Request
 --------------
 
-Because the terminal window running your Flask app is currently locked to that
+Because the terminal window running your FastAPI app is currently locked to that
 process, the simplest thing to do is open up a new terminal and SSH into the
 class server again.
 
-To make a request to your Flask app, type the following in the new terminal:
+To make a request to your FastAPI app, type the following in the new terminal:
 
 .. code-block:: console
 
