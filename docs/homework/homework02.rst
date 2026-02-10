@@ -122,7 +122,7 @@ also contain a section that summarizes where AI was used in the assignemnt.
 Additional Resources
 --------------------
 
-* `Meteorite Landings Data <https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh/about_data>`_
+* `Meteorite Landings Data <https://data.nasa.gov/dataset/meteorite-landings>`_
 * `JSON guide <https://coe-332-sp25.readthedocs.io/en/latest/unit02/json.html>`_
 * `Latitude and Longitude as decimals <https://en.wikipedia.org/wiki/Decimal_degrees>`_
 * `Great-circle distance formula <https://en.wikipedia.org/wiki/Great-circle_distance>`_
