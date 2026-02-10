@@ -17,6 +17,8 @@ provide a web-accessible interface to their system.
    unit02/overview
    unit03/overview
    unit04/overview
+   unit05/overview
+   unit06/overview
 
 .. toctree::
    :maxdepth: 1
@@ -24,3 +26,4 @@ provide a web-accessible interface to their system.
 
    homework/homework01
    homework/homework02
+   homework/homework03
