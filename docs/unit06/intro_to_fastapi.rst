@@ -97,7 +97,7 @@ of the Python file (in our case ``main.py``).
 
 .. code-block:: console
 
-   [coe332-vm]$ fastapi dev main.py
+   [coe332-vm]$ uv run -- fastapi dev main.py
    FastAPI   Starting development server 🚀
  
              Searching for package file structure from directories with __init__.py files
@@ -335,7 +335,7 @@ restart the FastAPI app); you should see:
 .. code-block:: console
 
    [coe332-vm]$ curl localhost:8000/
-   {"message":"Hello World"}(
+   {"message":"Hello World"}
 
 Routes with URL Parameters
 --------------------------
