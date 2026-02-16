@@ -518,6 +518,26 @@ in the semester.
 
    The Linux command-line utility ``jq`` is nice for displaying JSON in pretty-print format. 
 
+We have created a secure proxy to your VM that will allow you to reach port 8000 through your 
+web browser. There are two points to keep in mind. 
+
+1. First, when running the FastAPI dev server, we need to specify ``--host 0.0.0.0`` to instruct the 
+   server to listen on all interfaces. So, for example, the full command would become: 
+   ``fastapi dev --host 0.0.0.0 main.py``. 
+2. Second, we need to use the base URL associated with our TACC usernames of the form: 
+   ``https://<tacc_username>.coe332-2026.tacc.cloud``. For example, since my TACC username is ``jstubbs``, 
+   my base URL would be https://jstubbs.coe332-2026.tacc.cloud.
+
+Then, I can navigate to any URL path that my FasAPI server supports. Try navigating to ``/docs`` to 
+see the interactive documentation site that is automatically generated for you by FasAPI based on 
+your types. 
+
+.. figure:: images/FastAPI-docs.png
+    :width: 600px
+    :align: center
+
+Try clicking the "Try it out" buttons to exercise your endpoints! 
+
 CRUD Operations
 ---------------
 
@@ -596,6 +616,8 @@ EXERCISE 9
 ~~~~~~~~~~
 Replace the references to ``get_data`` in each of the endpoints: ``GET /degrees``, 
 ``GET /degrees/{id}``, ``DELETE /degrees/{id}``, and ``GET '/degrees/{id}/degrees'``. 
+
+
 
 Additional Resources
 --------------------
