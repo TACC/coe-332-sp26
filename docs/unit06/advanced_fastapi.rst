@@ -373,11 +373,340 @@ Nice! We get a well-formatted JSON object with a fairly descriptive message abou
    ]
    }
 
-This message is saying the input, ``abc`` of the ``start`` query parameter should have been an 
+This message is saying the input, ``abc``, of the ``start`` query parameter should have been an 
 integer. In other words, FastAPI is automatically taking care of error handling for us! This is 
 one of the biggest benefits to using strong typing in our Python signatures. Much of the error 
 handling, type conversion, etc., can be handled automatically by the underlying library. 
 
+We can also inspect the headers that FastAPI set for us. We set ``-v`` on our ``curl`` command 
+to see those: 
+
+.. code-block:: console
+   :linenos:
+   :emphasize-lines: 8
+
+   [coe332-vm]$ curl -v http://127.0.0.1:8000/degrees?start=abc
+
+   > GET /degrees?start=ab HTTP/1.1
+   > Host: 127.0.0.1:8000
+   > User-Agent: curl/8.5.0
+   > Accept: */*
+   > 
+   < HTTP/1.1 422 Unprocessable Content
+   < date: Mon, 16 Feb 2026 20:16:53 GMT
+   < server: uvicorn
+   < content-length: 150
+   < content-type: application/json
+
+Indeed, we see that our FastAPI server set a return code of 422, Unprocessable Content. This is very 
+appropriate, as we know the request was a client error. 
+
+
+Returning Non-200 Response Codes 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In some cases, the user's request will satisfy our type requirements but it will still be an 
+invalid request. For example, let's revisit the ``GET /degrees/{id}`` endpoint. Before, we 
+had the following implementation:
+
+.. code-block:: python3 
+
+   @app.get('/degrees/{id}')
+   def get_degrees_obj(id):
+      data = get_data()
+      for d in data: 
+         if d['id'] == id:
+               return d
+      else:
+         return {"message": f"Did not find id {id}"}   
+
+But if we inspect the response returned from this enpoint, what status code do we get if 
+the ``id`` attribute is an integer but does not correspond to an existing degree? 
+
+As before, we use ``-v`` to see the details:
+
+.. code-block:: console
+   :linenos:
+   :emphasize-lines: 8
+
+   [coe332-vm]$ curl -v http://127.0.0.1:8000/degrees/45
+
+   > GET /degrees/45 HTTP/1.1
+   > Host: 127.0.0.1:8000
+   > User-Agent: curl/8.5.0
+   > Accept: */*
+   > 
+   < HTTP/1.1 200 OK
+   < date: Mon, 16 Feb 2026 20:24:38 GMT
+   < server: uvicorn
+   < content-length: 32
+   < content-type: application/json
+
+Indeed, the ``45`` passes our type requirements of being an ``int``, but our API doesn't have 
+a degree object with id. Should this be a 200 "success" response? 
+
+In this case, the more appropriate reply would be a 404 "not found" resposne code. FastAPI provides 
+a facility for specifying non-200 status codes through the ``HTTPException`` class, a 
+custom Exception class. If you need to review Python's Exceptions, please see the Unit3 notes on
+`Error Handling <../unit03/errorhandling.html>`_.
+
+To use the ``HTTPException`` object, we first need to import it from the ``fastapi`` package: 
+
+.. code-block:: python3 
+
+   from fastapi import HTTPException
+
+Then, as with any other Exception object, we use the ``raise`` keyword. The ``HTTPException`` 
+constructor takes two arguments, ``status_code``, which should be an integrer, and ``detail``, 
+which should be a message to the client. Here is an updated version of the  ``GET /degrees/{id}`` 
+endpoint that returns a 404 when the ``id`` is not found: 
+
+.. code-block:: python3 
+
+   @app.get('/degrees/{id}')
+   def get_degrees_obj(id):
+      data = get_data()
+      for d in data: 
+         if d['id'] == id:
+               return d
+      else:
+         raise HTTPException(status_code=404, detail=f"Did not find id {id}")   
+
+EXERCISE 8
+~~~~~~~~~~
+Update your ``GET /degrees/{id}`` and ``GET /degrees/{id}/degrees`` endpoints to return 404 
+response codes when the ``id`` passed does not exist. Use ``curl`` or ``requests`` to confirm 
+that your server indeed returns a 404. 
+
+
+The Power of Types: Automatically Generated API Docs 
+-----------------------------------------------------
+We already mentioned that providing types on the parameters of our API endpoints allows FastAPI 
+to automatically validate HTTP requests, return error codes when user's requests failed to meet 
+our type specification, and perform automatic type conversions when the requests were valid. 
+In addition to these benefits, another powerful aspect is that FastAPI can automatically generate 
+documentation for all of our endpoints based on the types. In fact, FastAPI has already done 
+this for our API and made it available via the ``/openapi.json`` endpoint:
+
+.. code-block:: console 
+
+   [coe332-vm]$ curl localhost:8000/openapi.json | jq 
+
+   {
+   "openapi": "3.1.0",
+   "info": {
+      "title": "FastAPI",
+      "version": "0.1.0"
+   },
+   "paths": {
+      "/": {
+         "get": {
+         "summary": "Root",
+         "operationId": "root__get",
+         "responses": {
+            "200": {
+               "description": "Successful Response",
+               "content": {
+               "application/json": {
+                  "schema": {}
+               }
+   . . .
+
+It even serves an interactive application for us on the ``/docs`` URL. We'll do more with that later 
+in the semester. 
+
+.. note:: 
+
+   The Linux command-line utility ``jq`` is nice for displaying JSON in pretty-print format. 
+
+We have created a secure proxy to your VM that will allow you to reach port 8000 through your 
+web browser. There are two points to keep in mind. 
+
+1. First, when running the FastAPI dev server, we need to specify ``--host 0.0.0.0`` to instruct the 
+   server to listen on all interfaces. So, for example, the full command would become: 
+   ``fastapi dev --host 0.0.0.0 main.py``. 
+2. Second, we need to use the base URL associated with our TACC usernames of the form: 
+   ``https://<tacc_username>.coe332-2026.tacc.cloud``. For example, since my TACC username is ``jstubbs``, 
+   my base URL would be https://jstubbs.coe332-2026.tacc.cloud.
+
+Then, I can navigate to any URL path that my FasAPI server supports. Try navigating to ``/docs`` to 
+see the interactive documentation site that is automatically generated for you by FasAPI based on 
+your types. 
+
+.. figure:: images/FastAPI-docs.png
+    :width: 600px
+    :align: center
+
+Try clicking the "Try it out" buttons to exercise your endpoints! 
+
+CRUD Operations
+---------------
+
+To this point, we have looked at only the ``GET`` method. There are three other
+methods that are important to learn when working with REST APIs - ``PUT``, ``POST``,
+and ``DELETE``. Collectively, these four methods perform **CRUD** operations on our 
+data:
+
+* **C**\ reate: ``POST`` - add a new item to a collection
+* **R**\ ead: ``GET`` - get an item from a collection
+* **U**\ pdate: ``PUT`` - edit an existing item in a collection
+* **D**\ elete: ``DELETE`` - delete an item from a collection
+
+To implement one of these methods in a FastAPI route, we use the ``@app`` corresponding to the 
+method; e.g., ``@app.post``, ``@app.put``, etc. Then, the function below the decorator must 
+contain some logic to act according to the method and request.
+
+The DELETE
+~~~~~~~~~~
+
+In some ways, the DELETE is the most straight forward because we (typically) do not require a 
+request message. All we need to know to delete the object is the ``id``, which is specified in 
+the URL path. What should the delete do? It should remove the corresponding object from the 
+Python list. Let's implement that. 
+
+We can delete a key from a dictionary using the ``del <dictionary> <key>`` syntax. That will 
+rasie a ``KeyError`` exception if ``<key>`` is not a key in the variable ``<dictionary>``. So, 
+we'll need to use a ``try``--``except`` block. Your first attempt might look like this: 
+
+.. code-block:: python3 
+
+   @app.delete('/degrees/{id}')
+   def delete_degrees_obj(id: int):
+      data = get_data()
+      try:
+         del data[id] 
+         return {"message": f"Item {id} deleted."}
+      except KeyError:
+         raise HTTPException(status_code=404, detail=f"Did not find id {id}")
+
+This code looks reasonable, but let's test it out to see if it works. Try deleting a key from the 
+dictionary using a ``DELETE /degrees/{id}`` request and then try to get it using a 
+``GET /degrees/{id}`` request. What do you notice? 
+
+.. note:: 
+   You can specify the HTTP verb to send using the ``-X`` flag to ``curl``. For example, 
+   ``-X DELETE`` will send a DELETE request. 
+
+The item wasn't deleted! Why is that? It is because the ``get_data`` function returns a hard-coded 
+Python list every time it is called. In order to fix this issue, we need to create a global 
+Python object that all of our endpoints can reference. 
+
+In order to implement that, we'll first replace ``get_data`` with a globally-defined variable, 
+``data``, like so: 
+
+.. code-block:: python3 
+
+   data = [ {'id': 0, 'year': 1990, 'degrees': 5818},
+            {'id': 1, 'year': 1991, 'degrees': 5725},
+            {'id': 2, 'year': 1992, 'degrees': 6005},
+            {'id': 3, 'year': 1993, 'degrees': 6123},
+            {'id': 4, 'year': 1994, 'degrees': 6096} ]
+
+Then, in each API route function, we'll replace the call to ``get_data`` with a reference 
+to ``global data``. For example, our ``delete_degrees_obj`` function will become: 
+
+.. code-block:: python3 
+
+   @app.delete('/degrees/{id}')
+   def delete_degrees_obj(id: int):
+      global data
+      try:
+         del data[id] 
+         return {"message": f"Item {id} deleted."}
+      except KeyError:
+         raise HTTPException(status_code=404, detail=f"Did not find id {id}")
+
+EXERCISE 9
+~~~~~~~~~~
+Replace the references to ``get_data`` in each of the endpoints: ``GET /degrees``, 
+``GET /degrees/{id}``, ``DELETE /degrees/{id}``, and ``GET '/degrees/{id}/degrees'``. 
+
+
+The POST and PUT -- Modeling Request Messages with Pydantic
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In order for the user of our API to describe a new degrees object that they want us to create (the POST method), 
+or an update to an existing degrees object (the PUT method), they need to provide us with a detailed description 
+of the object. Doing so in URL path or query parameters would be unwieldy, so the HTTP specification allows for 
+passing a message in the request body. For our APIs, we'll specify that these request messages should be formatted 
+as JSON objects. If the API server successfully processes the request and creates or updates the object, then we'll 
+return a response message containing a description of the object we create or update. This will also be a JSON 
+object. 
+
+To keep everything strongly typed, we'll use Pydantic to model the request and response messages. FastAPI integrates 
+with Pydantic so that we can specify the types of our API endpoints using the models easily. 
+
+To begin, we first need to define our Pydantic models. It is common to define a model to represent the requested 
+object and a separate model to represent the object created by the API server and returned in the response. The 
+reason is because often times the API server will add or modify fields provided by the request. In our case, each 
+degrees object has three fields: 
+
+* ``id``
+* ``year``
+* ``degrees``
+
+Should the user who is creating a new degrees object pass the ``id``? How would they know what ``id`` value to pass? 
+We likely want to keep the ``id`` unique across all degrees objects. How will the user know what the "next" ``id`` should 
+be? And even worse, what if two users make requests to create degrees objects at the same time? 
+
+It usually makes more sense for the server to supply the (unique) identifier for a resource because it "knows" all of the 
+existing identifiers and can ensure no identifiers are reused. Thus, we'll have two Pydantic models, one with just ``year`` 
+and ``degrees``, representing a user request, and a second that adds an ``id`` field, which will be generated by the server. 
+Remember that with Pydantic models, like all Python classes, we can use inheritance to avoid having to repeat the duplicate 
+fields. 
+
+.. code-block:: python3
+
+   from pydantic import BaseModel
+
+   class DegreesRequest(BaseModel):
+      year: int
+      degrees: int 
+
+   class DegreesResponse(DegreesRequest):
+      id: int 
+
+With our Pydantic models defined, we are ready to create our POST function. This is the function signature we will 
+use: 
+
+.. code-block:: python3
+
+   @app.post("/degrees")
+   def create_degrees(d: DegreesRequest) -> DegreesResponse:
+      # ...implementation...
+
+Here, we are saying a ``DegreesRequest`` object is provided as the POST message body, and a ``DegreesResponse`` object 
+is returned. FastAPI automatically takes case of marshaling these objects to and from JSON, and doing validation, etc. 
+
+EXERCISE 10 
+~~~~~~~~~~~
+
+Implement the POST function. Your function should do the follow:
+
+1. Get the "next" ``id`` by looking through the existing ``data`` object for the current largest ``id`` value 
+   and adding 1 to it. 
+2. Create a ``DegreesResponse`` object using the input ``DegreesRequest`` object and the next ``id`` computed in 1). 
+3. Add the ``DegreesResponse`` object to the ``data`` object. 
+4. Return the ``DegreesResponse`` object to the user. 
+
+
+SOLUTION 
+~~~~~~~~
+
+Here is a complete solution 
+
+.. code-block:: python3
+
+   @app.post("/degrees")
+   def create_degrees(d: DegreesRequest) -> DegreesResponse:
+      global data 
+      # get the next id
+      max_id = 0 
+      for degrees in data:
+         if degrees['id'] > max_id:
+               max_id = degrees["id"]
+      new_id = max_id + 1 
+      new_d = DegreesResponse(year=d.year, degrees=d.degrees, id=new_id)
+      data[new_id] = new_d.model_dump()
+      return new_d 
 
 
 Additional Resources
