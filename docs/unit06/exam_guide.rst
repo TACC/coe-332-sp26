@@ -176,6 +176,7 @@ Writing Code: Part 2
 Given the following code:
 
 .. code-block:: python3 
+  
   from pydantic import BaseModel
   from fastapi import FastAPI, HTTPException
 
