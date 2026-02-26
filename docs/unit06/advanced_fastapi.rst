@@ -612,7 +612,7 @@ to ``global data``. For example, our ``delete_degrees_obj`` function will become
       try:
          del data[id] 
          return {"message": f"Item {id} deleted."}
-      except KeyError:
+      except IndexError:
          raise HTTPException(status_code=404, detail=f"Did not find id {id}")
 
 EXERCISE 9
@@ -705,8 +705,31 @@ Here is a complete solution
                max_id = degrees["id"]
       new_id = max_id + 1 
       new_d = DegreesResponse(year=d.year, degrees=d.degrees, id=new_id)
-      data[new_id] = new_d.model_dump()
+      data.append(new_d.model_dump())
       return new_d 
+
+Making POST requests 
+~~~~~~~~~~~~~~~~~~~~
+How do we create POST requests to try out our new endpoint? To make a post request we need 
+to do three things:
+
+1. Specify the HTTP method is POST. 
+2. Send a JSON document as the message associated with the request. 
+3. Specify a header, the ``Content-type`` header, and give a value of ``application/json``, so that 
+   the server knows to interpret the message as a JSON object. 
+
+With ``curl``, accomplish each of these as follows:
+
+1. The HTTP method can be specified with the ``-X POST`` flag. 
+2. We can use the ``-d`` flag to specify the message body. It needs to be formatted as string but 
+   contain valid JSON. 
+3. We use the ``-H "Content-type: application/json"`` to specify the header and its value. 
+
+Putting those all together, here is a ``curl`` command that works:
+
+.. code-block:: console
+
+   curl -H "Content-type: application/json" -X POST -d '{"degrees": 7000, "year": 1995}' localhost:8000/degrees
 
 
 Additional Resources

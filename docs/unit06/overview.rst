@@ -13,6 +13,6 @@ called Flask.
    intro_to_apis
    intro_to_fastapi
    advanced_fastapi
-   .. flask_docker
+   fastapi_docker
    .. flask_special_topics
 
