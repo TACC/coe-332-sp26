@@ -28,3 +28,4 @@ provide a web-accessible interface to their system.
    homework/homework02
    homework/homework03
    homework/homework04
+   homework/homework05
