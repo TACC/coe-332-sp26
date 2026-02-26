@@ -127,5 +127,18 @@ c) -v
 d) -\-help
 e) -\-show-headers
 
+Code Analysis 
+^^^^^^^^^^^^^
+1. What will be the output of the following code?
 
 .. code-block:: python3 
+
+    data = [{"a": 1, "b": 2}, {"a": 3, "b": -1}, {"a": 4, "b": 1}]
+    def f(key):
+        tot = 0
+        for item in data:
+            val = item[key]
+            tot += val
+        return tot
+
+    print(f("b"))
