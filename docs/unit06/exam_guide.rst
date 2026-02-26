@@ -143,3 +143,77 @@ Code Analysis
         return tot
 
     print(f("b"))
+
+Writing Code: Part 1
+^^^^^^^^^^^^^^^^^^^^
+
+Given the following code:
+
+.. code-block:: python3 
+
+  def get_data():
+    return {
+      "products": [
+        {id: 1, name: "Apple", price: .50},
+        {id: 2, name: "Banana", price: 10.00},
+        {id: 3, name: "Coconut", price: 4.50},
+        {id: 4, name: "Pear", price: 2.50},
+        {id: 5, name: "Lettuce", price: 1.50}
+      ]
+    }
+
+Write a function that:
+  1. Takes a single argument that is a list of product dictionaries
+  2. Sums the value of all products
+  3. and returns that sum as a float
+  4. contains type hints for the argument and the return type
+
+Writing Code: Part 2
+^^^^^^^^^^^^^^^^^^^^
+
+Given the following code:
+
+.. code-block:: python3 
+
+  from pydantic import BaseModel, HTTPException
+
+  class Product(BaseModel):
+    id: int
+    name: str
+    price: float
+
+  def get_data():
+    return {
+      "products": [
+        {id: 1, name: "Apple", price: .50},
+        {id: 2, name: "Banana", price: 10.00},
+        {id: 3, name: "Coconut", price: 4.50}
+      ]
+    }
+
+Write 2 FastAPI routes.
+
+**Route 1**
+  1. Converts the data returned by ``get_data`` into a list of pydantic models
+  2. Returns a list of products
+
+.. code-block:: python3 
+  
+  @app.____("/_______________")
+  def list_products():
+    # Fill in the code below
+
+**Route 2**
+  1. Converts the data returned by ``get_data`` into a list of pydantic models
+  2. Returns a single product by the specified ``id``
+  3. Raises an ``HTTPException`` with the correct status code if no product is found with the provided ``id``.
+
+.. code-block:: python3 
+  
+  @app.____("/_______________/{___}")
+  def get_product_by_id(___: ___):
+    # Fill in the code below
+
+.. note::
+  
+  FastAPI allows you to return the pydantic models directly. The framework will serialize it for you
