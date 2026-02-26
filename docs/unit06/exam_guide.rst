@@ -76,6 +76,18 @@ Short Answer
    c) The contents of an image file, such as a ``jpg`` file, read from disk using ``file.open()``.
    d) The following list: ``[ {"a": 1, "key": True}, 7, "Another string", {"key": "value"}]``
    
-
+Code Analysis 
+^^^^^^^^^^^^^
+1. What will be the output of the following code?
 
 .. code-block:: python3 
+
+    data = [{"a": 1, "b": 2}, {"a": 3, "b": -1}, {"a": 4, "b": 1}]
+    def f(key):
+        tot = 0
+        for item in data:
+            val = item[key]
+            tot += val
+        return tot
+
+    print(f("b"))
