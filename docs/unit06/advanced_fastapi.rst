@@ -563,20 +563,20 @@ request message. All we need to know to delete the object is the ``id``, which i
 the URL path. What should the delete do? It should remove the corresponding object from the 
 Python list. Let's implement that. 
 
-We can delete a key from a dictionary using the ``del <dictionary> <key>`` syntax. That will 
-rasie a ``KeyError`` exception if ``<key>`` is not a key in the variable ``<dictionary>``. So, 
-we'll need to use a ``try``--``except`` block. Your first attempt might look like this: 
+We can delete an item from a list using the ``list.remove(item)`` method, but we first need 
+make sure the item is actually in the list. Your first attempt might look like this: 
 
 .. code-block:: python3 
 
    @app.delete('/degrees/{id}')
    def delete_degrees_obj(id: int):
       data = get_data()
-      try:
-         del data[id] 
-         return {"message": f"Item {id} deleted."}
-      except KeyError:
-         raise HTTPException(status_code=404, detail=f"Did not find id {id}")
+      for item in data:
+         if item["id"] == id:
+             data.remove(item)
+             return {"message": f"Item {id} deleted."}
+      raise HTTPException(status_code=404, detail=f"Did not find id {id}")
+
 
 This code looks reasonable, but let's test it out to see if it works. Try deleting a key from the 
 dictionary using a ``DELETE /degrees/{id}`` request and then try to get it using a 
@@ -609,11 +609,11 @@ to ``global data``. For example, our ``delete_degrees_obj`` function will become
    @app.delete('/degrees/{id}')
    def delete_degrees_obj(id: int):
       global data
-      try:
-         del data[id] 
-         return {"message": f"Item {id} deleted."}
-      except IndexError:
-         raise HTTPException(status_code=404, detail=f"Did not find id {id}")
+      for item in data:
+         if item["id"] == id:
+             data.remove(item)
+             return {"message": f"Item {id} deleted."}
+      raise HTTPException(status_code=404, detail=f"Did not find id {id}")
 
 EXERCISE 9
 ~~~~~~~~~~
