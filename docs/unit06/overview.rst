@@ -14,5 +14,6 @@ called Flask.
    intro_to_fastapi
    advanced_fastapi
    fastapi_docker
-   .. flask_special_topics
+   fastapi_testing
+   exam_guide
 
