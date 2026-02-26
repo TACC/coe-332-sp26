@@ -154,11 +154,11 @@ Given the following code:
   def get_data():
     return {
       "products": [
-        {id: 1, name: "Apple", price: .50},
-        {id: 2, name: "Banana", price: 10.00},
-        {id: 3, name: "Coconut", price: 4.50},
-        {id: 4, name: "Pear", price: 2.50},
-        {id: 5, name: "Lettuce", price: 1.50}
+        {"id": 1, "name": "Apple", "price": .50},
+        {"id": 2, "name": "Banana", "price": 10.00},
+        {"id": 3, "name": "Coconut", "price": 4.50},
+        {"id": 4, "name": "Pear", "price": 2.50},
+        {"id": 5, "name": "Lettuce", "price": 1.50},
       ]
     }
 
@@ -168,14 +168,19 @@ Write a function that:
   3. and returns that sum as a float
   4. contains type hints for the argument and the return type
 
+Call that function with the data returned from ``get_data`` and prints the result to stdout
+
 Writing Code: Part 2
 ^^^^^^^^^^^^^^^^^^^^
 
 Given the following code:
 
 .. code-block:: python3 
+  from pydantic import BaseModel
+  from fastapi import FastAPI, HTTPException
 
-  from pydantic import BaseModel, HTTPException
+
+  app = FastAPI()
 
   class Product(BaseModel):
     id: int
@@ -185,11 +190,14 @@ Given the following code:
   def get_data():
     return {
       "products": [
-        {id: 1, name: "Apple", price: .50},
-        {id: 2, name: "Banana", price: 10.00},
-        {id: 3, name: "Coconut", price: 4.50}
+        {"id": 1, "name": "Apple", "price": .50},
+        {"id": 2, "name": "Banana", "price": 10.00},
+        {"id": 3, "name": "Coconut", "price": 4.50},
+        {"id": 4, "name": "Pear", "price": 2.50},
+        {"id": 5, "name": "Lettuce", "price": 1.50},
       ]
     }
+
 
 Write 2 FastAPI routes.
 
