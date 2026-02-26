@@ -70,7 +70,8 @@ Short Answer
 17. (True/False) When testing your code using ``pytest``, you should prefix your test function names with ``test_``
 
 
-Multiple choice 
+Multiple choice
+^^^^^^^^^^^^^^^
 
 * **When working with a Dockerfile (select all that apply):**
 
