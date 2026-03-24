@@ -15,7 +15,7 @@ download the complete set of HGNC data and inject it into a Redis database throu
 a Flask interface.
 
 This homework will essentially be a re-hash of the exercises from the last
-`Redis section <../unit07/redis_and_flask.html>`_.
+`Redis section <../unit07/redis_and_fastapi.html>`_.
 
 
 .. note::
