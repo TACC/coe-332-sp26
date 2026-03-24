@@ -47,7 +47,7 @@ has a ``/data`` route and a ``/gene`` route to make the first 14 fields from the
 
 Specifically, write a Pydantic data model to model the following fields from the hgnc data set:
 
-* hgnc_id, symbol, name, locus_group, locus_type, status, location, location_sortable, gene_group, gene_group_id, merops, date_approved_reserved, date_modified, merops: str
+* hgnc_id, symbol, name, locus_group, locus_type, status, location, location_sortable, gene_group, gene_group_id, merops, date_approved_reserved, date_modified, merops
 
 Here are the details on what the routes should do:
 
