@@ -3,7 +3,10 @@ Final Project
 
 **Due Date for Part 1: Tuesday, Apr 7, by 5:00pm central time**
 
-**Due Date for Parts 2-4: Friday, May 1, by 3:30pm central time**
+**Due Date for Parts 2-4: Friday, May 1, by 11:59pm central time**
+
+(Note: the default exam time for this class is Saturday, May 2, 8-10a, but there will be no 
+final exam for this class.)
 
 The Songs of Distant Final
 --------------------------
