@@ -47,8 +47,7 @@ has a ``/data`` route and a ``/gene`` route to make the first 14 fields from the
 
 Specifically, write a Pydantic data model to model the following fields from the hgnc data set:
 
-* hgnc_id, symbol, name, locus_group, locus_type, status, location, location_sortable, alias_symbol, alias_name, 
-  prev_symbol, prev_name, gene_group, gene_group_id
+* hgnc_id, symbol, name, locus_group, locus_type, status, location, location_sortable, gene_group, gene_group_id, merops, date_approved_reserved, date_modified, merops: str
 
 Here are the details on what the routes should do:
 
@@ -68,22 +67,22 @@ Here are the details on what the routes should do:
 .. code-block:: console
 
    [coe332-vm]$ curl localhost:5000/genes/HGNC:5
-   {
-    "hgnc_id": "HGNC:5",
-    "symbol": "A1BG",
-    "name": "alpha-1-B glycoprotein",
-    "locus_group": "protein-coding gene",
-    "locus_type": "gene with protein product",
-    "status": "Approved",
-    "location": "19q13.43",
-    "location_sortable": "19q13.43",
-    "alias_symbol": "",
-    "alias_name": "",
-    "prev_symbol": "",
-    "prev_name": "",
-    "gene_group": "Immunoglobulin like domain containing",
-    "gene_group_id": 594,
-   }
+    {
+      'date_approved_reserved': '1989-06-30',
+      'date_modified': '2020-09-17',
+      'ensembl_gene_id': 'ENSG00000121410',
+      'gene_group': ['Immunoglobulin like domain containing'],
+      'gene_group_id': [594],
+      'hgnc_id': 'HGNC:5',
+      'location': '19q13.43',
+      'location_sortable': '19q13.43',
+      'locus_group': 'protein-coding gene',
+      'locus_type': 'gene with protein product',
+      'merops': 'I43.950',
+      'name': 'alpha-1-B glycoprotein',
+      'status': 'Approved',
+      'symbol': 'A1BG',
+    }
 
 
 After completing the above, your app should have the following routes:
