@@ -205,9 +205,6 @@ for example, a FastAPI app and a worker.
 
 .. code-block:: yaml
 
-   ---
-   version: "3"
-
    services:
        redis-db:
            image: redis:7
@@ -218,10 +215,10 @@ for example, a FastAPI app and a worker.
            user: "1000:1000"
            command: ["--save", "1", "1"]
        python1:
-           image: python:3.10
+           image: python:3.14
            command: ["sleep", "9999999"]
        python2:
-           image: python:3.10
+           image: python:3.14
            command: ["sleep", "9999999"]
 
 
@@ -230,7 +227,7 @@ the command:
 
 .. code-block:: console
 
-   [coe332-vm]$ docker-compose up -d
+   [coe332-vm]$ docker compose up -d
    Creating network "messaging_default" with the default driver
    Creating messaging_redis-db_1 ... done
    Creating messaging_python2_1  ... done
@@ -256,7 +253,9 @@ to create two new shells inside the running containers:
 .. note::
 
    Once inside the running containers, what IP / alias do you use to refer to the Redis container?
-   What libraries might you have to pip install?
+   What libraries might you have to install?
+
+   Since these are just throw-away containers, you can use ``pip`` to install these packages. 
 
 When finished with the exercise, clean up your running containers by doing:
 
