@@ -25,13 +25,13 @@ By the end of this module, students should be able to:
   * Organize code for software system into API, worker, and jobs modules
   * Import the Jobs API into other modules to use for jobs functionality
   * Perform appropriate ``curl`` requests to POST jobs and GET the result of jobs
-  * **Design Principles.** The implementation of our Jobs API, comprised of multiple Flask routes, a task queue persisted 
+  * **Design Principles.** The implementation of our Jobs API, comprised of multiple FastAPI routes, a task queue persisted 
     in Redis, and a worker program, will demonstrate the use of modularity and encapsulation in software design. 
 
 
 Concurrency in the Jobs API
 ---------------------------
-Recall that our big-picture goal is to add a Jobs endpoint to our Flask system that can process long-running tasks.
+Recall that our big-picture goal is to add a Jobs endpoint to our FastAPI system that can process long-running tasks.
 We will implement our Jobs API with concurrency in mind.
 
 The overall architecture will thus be:
@@ -42,7 +42,7 @@ The overall architecture will thus be:
   3. Queue the job to run so that a worker can pick it up and run it.
   4. Build the worker to actually work the job.
 
-Parts **1-3**  are the tasks of the Flask API, while part **4** will be a worker, running as a separate container,
+Parts **1-3**  are the tasks of the FastAPI server, while part **4** will be a worker, running as a separate container,
 that is waiting for new items in the Redis queue.
 
 
@@ -69,12 +69,11 @@ The following should be kept in mind when designing the modules of a larger syst
   * Circular imports will cause errors - if module A imports an object from module B, module B cannot import from module A.
 
 
-
 Module Design
 -------------
 
 The Python standard library is a good source of examples of module design. You can browse the
-standard library for Python 3.10 `here <https://docs.python.org/3.10/library/>`_.
+standard library for Python 3.14 `here <https://docs.python.org/3.14/library/>`_.
 
   * We see the Python standard library has modules focused on a variety of computing tasks; for example, for working
     with different data types, such as the ``datetime`` module and the ``array`` module.  The descriptions are succinct:
@@ -171,7 +170,7 @@ We can see public and private objects in use within the standard library as well
 of public and private objects and methods.
 
   * Private objects are listed first.
-  * Public objects start on `line 442 <https://github.com/python/cpython/blob/3.10/Lib/datetime.py#L473>`_ with
+  * Public objects start on `line 442 <https://github.com/python/cpython/blob/3.10/Lib/datetime.py#L442>`_ with
     the ``timedelta`` class.
 
 
@@ -196,10 +195,13 @@ the purpose. Carefully consider which are public and private, and why.
 .. code-block:: python
    :linenos:
 
+   from datetime import datetime 
    import json
    import uuid
    import redis
    from hotqueue import HotQueue
+   from enum import Enum 
+   from pydantic import BaseModel 
    
    _redis_ip='redis-db'
    _redis_port='6379'
@@ -207,6 +209,20 @@ the purpose. Carefully consider which are public and private, and why.
    rd = redis.Redis(host=_redis_ip, port=6379, db=0)
    q = HotQueue("queue", host=_redis_ip, port=6379, db=1)
    jdb = redis.Redis(host=_redis_ip, port=6379, db=2)
+
+   class JobStatus(int, Enum):
+       SUBMITTED = 0 
+       QUEUED = 1 
+       RUNNING = 2 
+       ERROR = 3 
+       SUCCESS = 4
+
+
+   class Job(BaseModel):
+       id: str 
+       status: JobStatus
+       start: datetime 
+       end: datetime
    
    def _generate_jid():
        """
@@ -214,15 +230,12 @@ the purpose. Carefully consider which are public and private, and why.
        """
        return str(uuid.uuid4())
    
-   def _instantiate_job(jid, status, start, end):
+   def _instantiate_job(jid: str, status: JobStatus, start: datetime, end: datetime):
        """
        Create the job object description as a python dictionary. Requires the job id,
        status, start and end parameters.
        """
-       return {'id': jid,
-               'status': status,
-               'start': start,
-               'end': end }
+       return Job(jid=jid, status=status, start=start, end=end)
    
    def _save_job(jid, job_dict):
        """Save a job object in the Redis database."""
@@ -259,10 +272,10 @@ the purpose. Carefully consider which are public and private, and why.
 EXERCISE 2
 ~~~~~~~~~~
 
-Write a skeleton for a Flask app in the file ``api.py``. The Flask app should:
+Write a skeleton for a FastAPI app in the file ``api.py``. The FastAPI app should:
 
   1. Import necessary modules, including some from ``jobs.py``
-  2. Declare an instance of the Flask class
+  2. Declare an instance of the FastAPI class
   3. Support a route for POSTing a new job
   4. Support a route for GETting job status
 
