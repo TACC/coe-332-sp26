@@ -179,13 +179,13 @@ EXERCISE 1
 ~~~~~~~~~~
 
 Create three files, ``api.py``, ``worker.py``, and ``jobs.py`` in your local directory. You may wish to start from the
-files you prepared for Homework 06. You should also have a ``Dockerfile``, ``docker-compose.yml``, and ``requirements.txt``
-in this directory to help with containerization and orchestration.
+files you prepared for Homework 06. You should also have a ``Dockerfile`` and ``docker-compose.yml``
+in this directory to help with containerization and orchestration. 
 
 .. code-block:: console
   
   [coe332-vm] $ ls 
-  Dockerfile  api.py  docker-compose.yaml  jobs.py  requirements.txt  worker.py
+  Dockerfile  api.py  docker-compose.yaml  jobs.py  worker.py
 
 
 Add the following function and variable definitions to ``jobs.py``. Closely examine each line to make sure you understand
@@ -195,78 +195,100 @@ the purpose. Carefully consider which are public and private, and why.
 .. code-block:: python
    :linenos:
 
-   from datetime import datetime 
-   import json
-   import uuid
-   import redis
-   from hotqueue import HotQueue
-   from enum import Enum 
-   from pydantic import BaseModel 
-   
-   _redis_ip='redis-db'
-   _redis_port='6379'
-   
-   rd = redis.Redis(host=_redis_ip, port=6379, db=0)
-   q = HotQueue("queue", host=_redis_ip, port=6379, db=1)
-   jdb = redis.Redis(host=_redis_ip, port=6379, db=2)
+  from datetime import datetime
+  import json
+  import uuid
+  import redis
+  from hotqueue import HotQueue
+  from enum import Enum
+  from pydantic import BaseModel
+  import typing
 
-   class JobStatus(int, Enum):
-       SUBMITTED = 0 
-       QUEUED = 1 
-       RUNNING = 2 
-       ERROR = 3 
-       SUCCESS = 4
+  _redis_ip = "172.19.0.1"
+  _redis_port = "6379"
+
+  rd = redis.Redis(host=_redis_ip, port=6379, db=0)
+  q = HotQueue("queue", host=_redis_ip, port=6379, db=1)
+  jdb = redis.Redis(host=_redis_ip, port=6379, db=2)
 
 
-   class Job(BaseModel):
-       id: str 
-       status: JobStatus
-       start: datetime 
-       end: datetime
-   
-   def _generate_jid():
-       """
-       Generate a pseudo-random identifier for a job.
-       """
-       return str(uuid.uuid4())
-   
-   def _instantiate_job(jid: str, status: JobStatus, start: datetime, end: datetime):
-       """
-       Create the job object description as a python dictionary. Requires the job id,
-       status, start and end parameters.
-       """
-       return Job(jid=jid, status=status, start=start, end=end)
-   
-   def _save_job(jid, job_dict):
-       """Save a job object in the Redis database."""
-       jdb.set(jid, json.dumps(job_dict))
-       return
-   
-   def _queue_job(jid):
-       """Add a job to the redis queue."""
-       q.put(jid)
-       return
-   
-   def add_job(start, end, status="submitted"):
-       """Add a job to the redis queue."""
-       jid = _generate_jid()
-       job_dict = _instantiate_job(jid, status, start, end)
-       _save_job(jid, job_dict)
-       _queue_job(jid)
-       return job_dict
-   
-   def get_job_by_id(jid):
-       """Return job dictionary given jid"""
-       return json.loads(jdb.get(jid))
-   
-   def update_job_status(jid, status):
-       """Update the status of job with job id `jid` to status `status`."""
-       job_dict = get_job_by_id(jid)
-       if job_dict:
-           job_dict['status'] = status
-           _save_job(jid, job_dict)
-       else:
-           raise Exception()
+  class JobStatus(int, Enum):
+      QUEUED = 1
+      RUNNING = 2
+      ERROR = 3
+      SUCCESS = 4
+
+
+  class Job(BaseModel):
+      jid: str
+      status: JobStatus
+      start: int
+      end: int
+      start_time: typing.Optional[datetime] = None
+      end_time: typing.Optional[datetime] = None
+
+
+  def _generate_jid() -> str:
+      """
+      Generate a pseudo-random identifier for a job.
+      """
+      return str(uuid.uuid4())
+
+
+  def _instantiate_job(jid: str, status: JobStatus, start: int, end: int) -> Job:
+      """
+      Create the job object description as a python dictionary. Requires the job id,
+      status, start and end parameters.
+      """
+      return Job(jid=jid, status=status, start=start, end=end)
+
+
+  def _save_job(jid: str, job: Job) -> bool:
+      """Save a job object in the Redis database."""
+      jdb.set(jid, json.dumps(job.model_dump()))
+      return True
+
+
+  def _queue_job(jid: str) -> bool:
+      """Add a job to the redis queue."""
+      q.put(jid)
+      return True
+
+
+  def get_job_by_id(jid: str) -> Job:
+      """Return job object given jid"""
+      raw_data = json.loads(jdb.get(jid))
+      return Job(**raw_data)
+
+
+  def add_job(start: int, end: int) -> Job:
+      """Add a job to the redis database and queue."""
+      jid = _generate_jid()
+      job = _instantiate_job(jid, JobStatus.QUEUED, start, end)
+      _save_job(jid, job)
+      _queue_job(jid)
+      return job
+
+
+  def start_job(jid: str) -> bool:
+      """Called by worker when starting a new job. Updates the job's status and start time."""
+      start_time = datetime.now()
+      job = get_job_by_id(jid)
+      job.start_time = start_time
+      return _save_job(jid=jid, job=job)
+
+
+  def update_job_status(jid: str, status: JobStatus) -> bool:
+      """Update the status of job with job id `jid` to status `status`."""
+      job = get_job_by_id(jid)
+      if job:
+          job.status = status
+          if job.status == JobStatus.ERROR or job.status == JobStatus.SUCCESS:
+              job.end_time = datetime.now()
+          return _save_job(jid, job)
+      else:
+          raise Exception()
+
 
 
 EXERCISE 2
