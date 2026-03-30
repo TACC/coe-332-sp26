@@ -121,7 +121,23 @@ possible statuses for our jobs:
 4. success (terminal state)
 
 In practice, there may want to add additional statuses to track, but for demonstation purposes 
-we will keep it simple with the above four. 
+we will keep it simple with the above four. To define an enumeration in Python, we use the 
+``Enum`` class from the ``enum`` module and specify the values it should have. When specifying the 
+values, we give both the "human readable" value as well as a unique specific value, such as an 
+integer, to bind it to. It is customary to use upper-case letters for the human readable value, 
+as below. 
+
+.. code-block:: python 
+
+  from enum import Enum
+  class JobStatus(int, Enum):
+      QUEUED = 1
+      RUNNING = 2
+      ERROR = 3
+      SUCCESS = 4
+
+Instead of specifying the integer values (i.e., 1, 2, 3, 4) we could use the ``auto()`` function 
+from the ``enum`` module. 
 
 Code Organization
 -----------------
