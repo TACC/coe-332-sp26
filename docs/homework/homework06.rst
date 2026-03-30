@@ -156,8 +156,9 @@ homework 06:
    │   ├── Dockerfile
    │   ├── docker-compose.yaml
    │   ├── gene_api.py
+   │   └── pyproject.toml
    │   ├── README.md
-   │   └── requirements.txt
+   │   └── uv.lock
    └── README.md
 
 
