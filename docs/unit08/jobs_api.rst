@@ -269,6 +269,7 @@ the purpose. Carefully consider which are public and private, and why.
            raise Exception()
 
 
+
 EXERCISE 2
 ~~~~~~~~~~
 
