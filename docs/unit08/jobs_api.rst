@@ -74,7 +74,7 @@ for the ``start`` and ``end`` parameters. Here is an initial version:
 
 
 Optional Fields 
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~
 
 Let's add the start time and end time for the job. We can use the ``datetime`` type as the 
 primary object type for each, but we need to think about whether we will always know those 
@@ -179,7 +179,7 @@ standard library for Python 3.14 `here <https://docs.python.org/3.14/library/>`_
 
 With this in mind, a first approach might be to break up our system into two modules:
 
-  * ``api.py`` - this module contains the Flask web server.
+  * ``api.py`` - this module contains the FastAPI web server.
   * ``worker.py`` - this module contains the code to execute jobs.
 
 However, both the API server and the workers will need to interact with the database and the queue:
@@ -190,7 +190,7 @@ However, both the API server and the workers will need to interact with the data
 
 This suggests a different structure:
 
-  * ``api.py`` - this module contains the Flask web server.
+  * ``api.py`` - this module contains the FastAPI web server.
   * ``worker.py`` - this module contains the code to execute jobs.
   * ``jobs.py`` - this module contains core functionality for working with jobs in Redis (and on the queue).
 
@@ -209,7 +209,7 @@ We can sketch out our module design by making a list of the functionality that w
 in each module. This is only an initial pass at listing the functionality needed -- we will refine it 
 over time -- but making an initial list is important for thinking through the problem. 
 
-``api.py``: This file will contain all the functionality related to the Flask web server, and will 
+``api.py``: This file will contain all the functionality related to the FastAPI web server, and will 
 include functions related to each of the API endpoints in our application. 
 
   * POST /data -- Load the data into the application. Will write to Redis.
