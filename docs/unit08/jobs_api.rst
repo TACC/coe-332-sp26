@@ -45,7 +45,99 @@ The overall architecture will thus be:
 Parts **1-3**  are the tasks of the FastAPI server, while part **4** will be a worker, running as a separate container,
 that is waiting for new items in the Redis queue.
 
+Strong Types Using Pydantic 
+---------------------------
 
+Our first order of business is to define the data model(s) (i.e., types) that we will be working 
+with in our application. The primary object here is a *job*, and we want to model it with a 
+Pydantic model so that we have control over the kinds of job objects that we work with. 
+
+Our job is going to have an *id* field and then one or more fields describing the work to be done. 
+In this simplified example, we will assume just two description fields, a *start* and an *end*, 
+which will both be integers. The work will simply print out the numbers between *start* and *end*, 
+but a real job would have more parameters. 
+
+What else do we need for our job data model? It will be useful to have some additional "bookeeping"
+fields, such as the job's current *status*, the *start time* and the *end time* of the job. We will 
+use a UUID field for the job's id, which will ultimately be a ``str`` type and we can use ``int`` 
+for the ``start`` and ``end`` parameters. Here is an initial version:  
+
+.. code-block:: python 
+
+  from pydantic import BaseModel 
+
+  class Job(BaseModel):
+
+    jid: str 
+    start: int 
+    end: int 
+
+
+Optional Fields 
+^^^^^^^^^^^^^^^
+
+Let's add the start time and end time for the job. We can use the ``datetime`` type as the 
+primary object type for each, but we need to think about whether we will always know those 
+values for a given job. When a user submits a job and we add it to the queue, will we know 
+when it will actually start running? It depends on how many other jobs are ahead of it in the 
+queue, how long those jobs will take, and how many compute resources we have. Similarly, we 
+won't know when the job will end until it actually ends. 
+
+The job's ``start_time`` and ``end_time`` are examples of fields that will not always be available 
+on the job data model. We denote such fields as "optional" using the ``typing.Optional`` class and 
+provding a default value. In this case, the default will just be ``None``.  
+Adding these fields yields the following model: 
+
+.. code-block:: python 
+
+  class Job(BaseModel):
+      jid: str
+      start: int
+      end: int
+      start_time: typing.Optional[datetime] = None
+      end_time: typing.Optional[datetime] = None
+
+
+Enumerations for Types with a Fixed Set of Values 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``bool`` type is a special data type with two values: ``True`` and ``False``. You could 
+use a string to represent such as value, i.e., have ``"True"`` and ``"False"``, but it is not 
+as convenient and could lead to errors -- what happens if someone uses ``"true"`` or ``"TRUE"``?
+By specifying that the only allowable values are ``True`` and ``False`` we are able to simplify 
+our code and more easily ensure the proper values are used. 
+
+The ``bool`` type is a special case of an ``Enumeration``, that is, a type with a fixed set of 
+values. The job's status can be modeled with such a type, no matter what kind of job the user submits or 
+what happens to it during proccessing, we can specify (or enumerate) all of the possible statuses 
+that is might encounter. For example, the job will start in "queued" status when it is initially 
+added to the queue. Then it will go to "running" status once a worker picks it up. And eventually, 
+it will be finished, either as an "error" or a "success". So we could say those are the four 
+possible statuses for our jobs:
+
+1. queued 
+2. running 
+3. error (terminal state)
+4. success (terminal state)
+
+In practice, there may want to add additional statuses to track, but for demonstation purposes 
+we will keep it simple with the above four. To define an enumeration in Python, we use the 
+``Enum`` class from the ``enum`` module and specify the values it should have. When specifying the 
+values, we give both the "human readable" value as well as a unique specific value, such as an 
+integer, to bind it to. It is customary to use upper-case letters for the human readable value, 
+as below. 
+
+.. code-block:: python 
+
+  from enum import Enum
+  class JobStatus(int, Enum):
+      QUEUED = 1
+      RUNNING = 2
+      ERROR = 3
+      SUCCESS = 4
+
+Instead of specifying the integer values (i.e., 1, 2, 3, 4) we could use the ``auto()`` function 
+from the ``enum`` module. 
 
 Code Organization
 -----------------
@@ -179,94 +271,117 @@ EXERCISE 1
 ~~~~~~~~~~
 
 Create three files, ``api.py``, ``worker.py``, and ``jobs.py`` in your local directory. You may wish to start from the
-files you prepared for Homework 06. You should also have a ``Dockerfile``, ``docker-compose.yml``, and ``requirements.txt``
-in this directory to help with containerization and orchestration.
+files you prepared for Homework 06. You should also have a ``Dockerfile`` and ``docker-compose.yml``
+in this directory to help with containerization and orchestration. 
 
 .. code-block:: console
   
   [coe332-vm] $ ls 
-  Dockerfile  api.py  docker-compose.yaml  jobs.py  requirements.txt  worker.py
+  Dockerfile  api.py  docker-compose.yaml  jobs.py  worker.py
 
 
-Add the following function and variable definitions to ``jobs.py``. Closely examine each line to make sure you understand
+Add the following function and variable definitions to ``jobs.py``. Closely examine each line to 
+make sure you understand
 the purpose. Carefully consider which are public and private, and why.
 
 
 .. code-block:: python
-   :linenos:
+  :linenos:
 
-   from datetime import datetime 
-   import json
-   import uuid
-   import redis
-   from hotqueue import HotQueue
-   from enum import Enum 
-   from pydantic import BaseModel 
-   
-   _redis_ip='redis-db'
-   _redis_port='6379'
-   
-   rd = redis.Redis(host=_redis_ip, port=6379, db=0)
-   q = HotQueue("queue", host=_redis_ip, port=6379, db=1)
-   jdb = redis.Redis(host=_redis_ip, port=6379, db=2)
+  from datetime import datetime
+  import json
+  import uuid
+  import redis
+  from hotqueue import HotQueue
+  from enum import Enum
+  from pydantic import BaseModel
+  import typing
 
-   class JobStatus(int, Enum):
-       SUBMITTED = 0 
-       QUEUED = 1 
-       RUNNING = 2 
-       ERROR = 3 
-       SUCCESS = 4
+  _redis_ip = "172.19.0.1"
+  _redis_port = "6379"
+
+  rd = redis.Redis(host=_redis_ip, port=6379, db=0)
+  q = HotQueue("queue", host=_redis_ip, port=6379, db=1)
+  jdb = redis.Redis(host=_redis_ip, port=6379, db=2)
 
 
-   class Job(BaseModel):
-       id: str 
-       status: JobStatus
-       start: datetime 
-       end: datetime
-   
-   def _generate_jid():
-       """
-       Generate a pseudo-random identifier for a job.
-       """
-       return str(uuid.uuid4())
-   
-   def _instantiate_job(jid: str, status: JobStatus, start: datetime, end: datetime):
-       """
-       Create the job object description as a python dictionary. Requires the job id,
-       status, start and end parameters.
-       """
-       return Job(jid=jid, status=status, start=start, end=end)
-   
-   def _save_job(jid, job_dict):
-       """Save a job object in the Redis database."""
-       jdb.set(jid, json.dumps(job_dict))
-       return
-   
-   def _queue_job(jid):
-       """Add a job to the redis queue."""
-       q.put(jid)
-       return
-   
-   def add_job(start, end, status="submitted"):
-       """Add a job to the redis queue."""
-       jid = _generate_jid()
-       job_dict = _instantiate_job(jid, status, start, end)
-       _save_job(jid, job_dict)
-       _queue_job(jid)
-       return job_dict
-   
-   def get_job_by_id(jid):
-       """Return job dictionary given jid"""
-       return json.loads(jdb.get(jid))
-   
-   def update_job_status(jid, status):
-       """Update the status of job with job id `jid` to status `status`."""
-       job_dict = get_job_by_id(jid)
-       if job_dict:
-           job_dict['status'] = status
-           _save_job(jid, job_dict)
-       else:
-           raise Exception()
+  class JobStatus(int, Enum):
+      QUEUED = 1
+      RUNNING = 2
+      ERROR = 3
+      SUCCESS = 4
+
+
+  class Job(BaseModel):
+      jid: str
+      status: JobStatus
+      start: int
+      end: int
+      start_time: typing.Optional[datetime] = None
+      end_time: typing.Optional[datetime] = None
+
+
+  def _generate_jid() -> str:
+      """
+      Generate a pseudo-random identifier for a job.
+      """
+      return str(uuid.uuid4())
+
+
+  def _instantiate_job(jid: str, status: JobStatus, start: int, end: int) -> Job:
+      """
+      Create the job object description as a python dictionary. Requires the job id,
+      status, start and end parameters.
+      """
+      return Job(jid=jid, status=status, start=start, end=end)
+
+
+  def _save_job(jid: str, job: Job) -> bool:
+      """Save a job object in the Redis database."""
+      jdb.set(jid, json.dumps(job.model_dump()))
+      return True
+
+
+  def _queue_job(jid: str) -> bool:
+      """Add a job to the redis queue."""
+      q.put(jid)
+      return True
+
+
+  def get_job_by_id(jid: str) -> Job:
+      """Return job object given jid"""
+      raw_data = json.loads(jdb.get(jid))
+      return Job(**raw_data)
+
+
+  def add_job(start: int, end: int) -> Job:
+      """Add a job to the redis database and queue."""
+      jid = _generate_jid()
+      job = _instantiate_job(jid, JobStatus.QUEUED, start, end)
+      _save_job(jid, job)
+      _queue_job(jid)
+      return job
+
+
+  def start_job(jid: str) -> bool:
+      """Called by worker when starting a new job. Updates the job's status and start time."""
+      start_time = datetime.now()
+      job = get_job_by_id(jid)
+      job.start_time = start_time
+      return _save_job(jid=jid, job=job)
+
+
+  def update_job_status(jid: str, status: JobStatus) -> bool:
+      """Update the status of job with job id `jid` to status `status`."""
+      job = get_job_by_id(jid)
+      if job:
+          job.status = status
+          if job.status == JobStatus.ERROR or job.status == JobStatus.SUCCESS:
+              job.end_time = datetime.now()
+          return _save_job(jid, job)
+      else:
+          raise Exception()
+
 
 
 
