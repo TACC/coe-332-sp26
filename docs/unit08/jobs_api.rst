@@ -305,11 +305,11 @@ the purpose. Carefully consider which are public and private, and why.
   jdb = redis.Redis(host=_redis_ip, port=6379, db=2)
 
 
-  class JobStatus(int, Enum):
-      QUEUED = 1
-      RUNNING = 2
-      ERROR = 3
-      SUCCESS = 4
+  class JobStatus(str, Enum):
+      QUEUED = "QUEUED"
+      RUNNING = "RUNNING"
+      ERROR = "FINISHED -- ERROR"
+      SUCCESS = "FINISHED -- SUCCESS"
 
 
   class Job(BaseModel):
@@ -338,7 +338,7 @@ the purpose. Carefully consider which are public and private, and why.
 
   def _save_job(jid: str, job: Job) -> bool:
       """Save a job object in the Redis database."""
-      jdb.set(jid, json.dumps(job.model_dump()))
+      jdb.set(jid, json.dumps(job.model_dump(mode="json")))
       return True
 
 
@@ -392,8 +392,8 @@ Write a skeleton for a FastAPI app in the file ``api.py``. The FastAPI app shoul
 
   1. Import necessary modules, including some from ``jobs.py``
   2. Declare an instance of the FastAPI class
-  3. Support a route for POSTing a new job
-  4. Support a route for GETting job status
+  3. Support a route for POSTing a new job -- what new data models might you need?
+  4. Support a route for GETting job status -- do you need any new data models here? 
 
 .. tip::
 
@@ -404,7 +404,7 @@ Write a skeleton for a FastAPI app in the file ``api.py``. The FastAPI app shoul
       curl localhost:5000/jobs -X POST -d '{"start":1, "end":2}' -H "Content-Type: application/json"
     
    In this example, we are sending a 'start' and 'end' index which is important for the "work". E.g. perhaps
-   the worker is designed to plot all the values between 'start' and 'end'. In practice, the app that you 
+   the worker is designed to add up or plot all the values between 'start' and 'end'. In practice, the app that you 
    develop may require different parameters.
 
 
@@ -415,15 +415,19 @@ Write a skeleton for a worker in the file ``worker.py``: The worker should:
 
   1. Import necessary modules, including some from ``jobs.py``
   2. Pull items (job IDs) off the queue
-  3. When it starts working on a new job, update the job status to 'in progress'
-  4. Do work (e.g. sleep for 15 seconds)
+  3. When it starts working on a new job, update the job status to 'RUNNING'
+  4. Do work by adding up the values between start and finish. You can also simulate a "longer running" process by 
+     issuing a sleep in the worker (e.g. sleep for 5 or 10 seconds or so)
   5. When it finishes working on a new job, update the job status to 'complete'
+
+What will you need to make sure the worker program can be run from the command line and run forever once started?
+Make sure you can start up a worker in a new terminal and test that it can work jobs. 
 
 
 EXERCISE 4
 ~~~~~~~~~~
 
-Fill out the contents of the ``Dockerfile``, ``docker-compose.yml``, and ``requirements.txt`` in order to help with
+Fill out the contents of the ``Dockerfile`` and ``docker-compose.yml`` in order to help with
 containerization and orchestration. Pay careful attention to how you set up and build the containers. Should we be
 using one Docker image or two? What should the entrypoint be? 
 
