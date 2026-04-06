@@ -48,14 +48,15 @@ Connecting to the TACC Kubernetes Instance
 
 In this class, we will use a Kubernetes cluster running at TACC that we have created for use in this class 
 for deploying our applications. To simplify the process
-of accessing the Kubernetes cluster, we have enabled connectivity to it from the ``student-login`` host.
-Therefore, any time you want to work with k8s, simply SSH to ``student-login`` with your TACC username as you have throughout the 
-semester and then issue your ``kubectl`` commands
+of accessing the Kubernetes cluster, we have enabled connectivity to it from the 
+``coe332-2026.tacc.cloud`` host.
+Therefore, any time you want to work with k8s, simply SSH to ``coe332-2026.tacc.cloud`` with your 
+TACC username as you have throughout the semester and then issue your ``kubectl`` commands
 
 .. code-block:: console 
 
-   [local] $ ssh username@student-login.tacc.utexas.edu
-   coe332-vm $ ...do kubernetes work...
+   [local]$ ssh username@coe332-2026.tacc.cloud
+   bastion-9$ ...do kubernetes work...
 
 This machine has Kubernetes tools installed on it and has *access to the Kubernetes API*
 for the cluster, but you should be aware that this server is *not part of the Kubernetes cluster* itself. 
@@ -75,7 +76,7 @@ is the case by running the following:
 
 .. code-block:: console
 
-   coe332-vm$ kubectl version -o yaml
+   bastion-9$ kubectl version -o yaml
 
 You should see output similar to the following:
 
@@ -136,7 +137,7 @@ the following command
 
 .. code-block:: console 
 
-   coe332-vm$ kubectl get pods
+   bastion-9$ kubectl get pods
 
 You will get a response like the following:
 
@@ -155,7 +156,7 @@ to have access to:
 
 .. code-block:: console
 
-   coe332-vm$ kubectl get pods --namespace=wallen
+   bastion-9$ kubectl get pods --namespace=wallen
 
 The response might look like:
 
@@ -170,14 +171,14 @@ This is the output we expect because we would not have access to that user's pod
 To see more information about how k8s and the kubectl CLI is configured in your environment,
 inspect the file located at ``~/.kube/config``.
 
-To install the k8s CLI on your Jetstream instance, log in to Jetstream and issue the following 
+To install the k8s CLI on your individual VM instance, SSH to your VM and issue the following 
 commands (replacing USERNAME with your username):
 
 .. code-block:: console
 
-   [coe332-vm]$ sudo curl -LO "https://dl.k8s.io/release/v1.28.5/bin/linux/amd64/kubectl"
+   [bastion-9]$ sudo curl -LO "https://dl.k8s.io/release/v1.28.5/bin/linux/amd64/kubectl"
    [coe332-vm]$ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-   [coe332-vm]$ scp -r USERNAME@student-login.tacc.utexas.edu:~/.kube ./
+   [coe332-vm]$ scp -r USERNAME@coe332-2026.tacc.cloud:~/.kube ./
 
 To confirm whether it worked, try the following commands:
 
