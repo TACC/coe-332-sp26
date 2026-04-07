@@ -176,7 +176,7 @@ commands (replacing USERNAME with your username):
 
 .. code-block:: console
 
-   [bastion-9]$ sudo curl -LO "https://dl.k8s.io/release/v1.28.5/bin/linux/amd64/kubectl"
+   [bastion-9]$ sudo curl -LO "https://dl.k8s.io/release/v1.34.6/bin/linux/amd64/kubectl"
    [coe332-vm]$ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
    [coe332-vm]$ scp -r USERNAME@coe332-2026.tacc.cloud:~/.kube ./
 
