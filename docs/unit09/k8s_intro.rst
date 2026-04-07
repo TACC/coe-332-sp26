@@ -60,7 +60,7 @@ TACC username as you have throughout the semester and then issue your ``kubectl`
 
 This machine has Kubernetes tools installed on it and has *access to the Kubernetes API*
 for the cluster, but you should be aware that this server is *not part of the Kubernetes cluster* itself. 
-Note that it will require careful organization and work to keep files in sync between the ``student-login`` host and
+Note that it will require careful organization and work to keep files in sync between the ``bastion-9`` host and
 your Jetstream VM.  
 
 
