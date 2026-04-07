@@ -15,8 +15,8 @@ to the application deployment over time.
 
    orchestration
    k8s_intro
-   .. pods
-   .. deployments
+   pods
+   deployments
    .. pvcs
    .. services
    .. k8s_cheat_sheet
