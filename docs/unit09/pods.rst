@@ -85,7 +85,7 @@ The pod spec we defined looked like this:
 There is just one stanza, the ``containers`` stanza, which is a list of containers (recall that pods can contain
 multiple containers). Here we are defining just one container. For each container, we provide:
 
-  * ``name`` (optional) -- this is the name of the container, similar to the name attribute in Docker.
+  * ``name`` (required) -- this is the name of the container, similar to the name attribute in Docker.
   * ``image`` (required) -- the image we want to use for the container, just like with Docker.
   * ``command`` (optional) -- the command we want to run in the container. Here we are running a short BASH script.
 
