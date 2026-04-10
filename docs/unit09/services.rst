@@ -47,7 +47,7 @@ pods using their IP address.
 
 Ports
 -----
-To communicate with a program running on a network, we use ports. We saw how our FastAPI program used port 5000 to
+To communicate with a program running on a network, we use ports. We saw how our FastAPI program used port 8000 to
 communicate HTTP requests from clients. We can expose ports in our k8s deployments by defining a ``ports`` stanza in
 our ``template.spec.containers`` object. Let's try that now.
 
@@ -76,19 +76,19 @@ Create a file called ``deployment-hello-fastapi.yml`` and copy the following con
          containers:
            - name: hello-fastapi
              imagePullPolicy: Always
-             image: wjallen/hello-fastapi:1.0
+             image: nathandf/hello-fastapi:1.0
              ports:
              - name: http
-               containerPort: 5000
+               containerPort: 8000
 
 Much of this will look familiar. We are creating a deployment that matches the pod description given in the ``template.spec``
-stanza. The pod description uses an image, ``wjallen/hello-fastapi:1.0``. This image runs a very simple FastAPI server that
+stanza. The pod description uses an image, ``nathandf/hello-fastapi:1.0``. This image runs a very simple FastAPI server that
 responds with simple text message at the ``/`` endpoint.
 
 The ``ports`` attribute is a list of k8s port descriptions. Each port in the list includes:
 
   * ``name`` -- the name of the port, in this case, ``http``. This could be anything we want really.
-  * ``containerPort`` -- the port inside the container to expose, in this case ``5000``. This needs to match the port
+  * ``containerPort`` -- the port inside the container to expose, in this case ``8000``. This needs to match the port
     that the containerized program (in this case, FastAPI server) is binding to.
 
 Next create the hello-fastapi deployment using ``kubectl apply``
@@ -131,8 +131,8 @@ we will either find that it hangs indefinitely or possible gives an error:
 
 .. code-block:: console
 
-   [coe332-vm]$ curl 10.233.116.59:5000/
-   curl: (7) Failed connect to 10.233.116.59:5000; Network is unreachable
+   [coe332-vm]$ curl 10.233.116.59:8000/
+   curl: (7) Failed connect to 10.233.116.59:8000; Network is unreachable
 
 This is because the 10.233.*.* private k8s network is not available from the outside.
 However, it *is* available from other pods in the namespace.
@@ -183,13 +183,13 @@ Create a new "debug" deployment using the following definition:
 
 Once it is ready, exec into the running pod for this deployment. Once we have a shell running inside our debug
 deployment pod, we can try to access our FastAPI server. Recall that
-the IP and port for the FastAPI server were determined above to be 10.244.7.95:5000 (yours will be different).
+the IP and port for the FastAPI server were determined above to be 10.244.7.95:8000 (yours will be different).
 
 If we try to access it using curl from within the debug container, we get:
 
 .. code-block:: console
 
-   root@py-debug-deployment-5cc8cdd65f-xzhzq: $ curl 10.233.116.59:5000
+   root@py-debug-deployment-5cc8cdd65f-xzhzq: $ curl 10.233.116.59:8000
    Hello, world!
 
 Great! k8s networking from within the private network is working as expected!
@@ -226,8 +226,8 @@ Copy and paste the following code into a file called ``service-hello-fastapi.yml
        app: hello-fastapi
      ports:
      - name: hello-fastapi
-       port: 5000
-       targetPort: 5000
+       port: 8000
+       targetPort: 8000
 
 Let's look at the ``spec`` description for this service.
 
@@ -256,9 +256,9 @@ We can list the services:
 
    [coe332-vm]$ kubectl get services
    NAME            TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-   hello-service   ClusterIP   10.233.12.76   <none>        5000/TCP   11s
+   hello-service   ClusterIP   10.233.12.76   <none>        8000/TCP   11s
 
-We see k8s created a new service with IP ``10.233.12.76``. We should be able to use this IP address (and port 5000) to
+We see k8s created a new service with IP ``10.233.12.76``. We should be able to use this IP address (and port 8000) to
 communicate with our FastAPI server. Let's try it. Remember that we have to be on the k8s private network, so we need to
 exec into our debug deployment pod first.
 
@@ -267,7 +267,7 @@ exec into our debug deployment pod first.
   [coe332-vm]$ kubectl exec -it py-debug-deployment-5cc8cdd65f-xzhzq -- /bin/bash
 
   # from inside the container ---
-  root@py-debug-deployment-5cc8cdd65f-xzhzq:/ $ curl 10.233.12.76:5000/
+  root@py-debug-deployment-5cc8cdd65f-xzhzq:/ $ curl 10.233.12.76:8000/
   Hello, world!
 
 It worked! Now, if we remove our hello-fastapi pod, k8s will start a new one with a new IP address, but our service will
@@ -293,7 +293,7 @@ automatically route requests to the new pod. Let's try it.
    # Yep, 10.233.12.96 -- that's different; the first pod had IP 10.233.116.59
 
    # but back in the debug deployment pod, check that we can still use the service IP --
-   root@py-debug-deployment-5cc8cdd65f-xzhzq:/ $ curl 10.233.12.76:5000/
+   root@py-debug-deployment-5cc8cdd65f-xzhzq:/ $ curl 10.233.12.76:8000/
    Hello, world!
 
 
@@ -369,8 +369,8 @@ similar:
        selector:
            app: hello-fastapi
        ports:
-           - port: 5000
-             targetPort: 5000
+           - port: 8000
+             targetPort: 8000
 
 Update the highlighted lines:
 
@@ -397,8 +397,8 @@ Check that the service was created successfully and determine the port that was 
 
    [coe332-vm]$ kubectl get services
    NAME                           TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
-   hello-fastapi-nodeport-service   NodePort    10.233.1.87    <none>        5000:32627/TCP   24s
-   hello-fastapi-service            ClusterIP   10.233.58.60   <none>        5000/TCP         4d10h
+   hello-fastapi-nodeport-service   NodePort    10.233.1.87    <none>        8000:32627/TCP   24s
+   hello-fastapi-service            ClusterIP   10.233.58.60   <none>        8000/TCP         4d10h
 
 
 Here we see that port ``32627`` was created for this service. Your port will be different. 
@@ -452,7 +452,7 @@ Copy the following code into a new file called ``ingress-hello-fastapi.yml`` or 
                service:
                  name: hello-fastapi-nodeport-service
                  port:
-                     number: 5000
+                     number: 8000
 
 
 Be sure to update the highlighted lines:
