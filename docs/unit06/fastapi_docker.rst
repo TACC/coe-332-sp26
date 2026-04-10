@@ -160,7 +160,7 @@ containers.
 Moreover, so far we have been looking at single-container applications. 
 But what if we want to do something more complex involving multiple containers? In this course, 
 our goal is to ultimately develop and orchestrate a multi-container
-application consisting of, e.g., a Flask app, a database, a message queue, an
+application consisting of, e.g., a FastAPI app, a database, a message queue, an
 authentication service, and more.
 
 
@@ -261,7 +261,7 @@ To start the service in the background, use the ``-d`` flag:
 
    [coe332-vm]$ docker compose up -d
 
-Once the service is running, perform some curl commands to test the running Flask
+Once the service is running, perform some curl commands to test the running FastAPI
 app before stopping the service with:
 
 

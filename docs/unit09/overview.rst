@@ -17,9 +17,9 @@ to the application deployment over time.
    k8s_intro
    pods
    deployments
-   .. pvcs
-   .. services
-   .. k8s_cheat_sheet
+   pvcs
+   services
+   k8s_cheat_sheet
 
 ..
    publicip

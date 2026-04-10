@@ -12,7 +12,7 @@ non-profit which oversees the HUGO Gene Nomenclature Committee
 (`HGNC <https://en.wikipedia.org/wiki/HUGO_Gene_Nomenclature_Committee>`_). The HGNC 
 *"approves a unique and meaningful name for every gene"*. For this homework, we will
 download the complete set of HGNC data and inject it into a Redis database through
-a Flask interface.
+a FastAPI interface.
 
 This homework will essentially be a re-hash of the exercises from the last
 `Redis section <../unit07/redis_and_fastapi.html>`_.

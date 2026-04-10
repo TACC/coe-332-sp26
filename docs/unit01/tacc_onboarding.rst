@@ -211,7 +211,7 @@ of open source code repositories on GitHub that the helicopter project depends o
 
 
 Included in the list are a lot of libraries and tools that we will be using this
-semester to build our cloud systems including: Linux, curl, pycurl, yaml, flask,
+semester to build our cloud systems including: Linux, curl, pycurl, yaml, FastAPI,
 click, pytest, jinja, requests, urllib3, werkzeug, (and many others).
 Looking at the packages, it seems pretty likely that the rover communicates with
 the helicopter through something similar to a REST API! We will all be building
