@@ -118,7 +118,7 @@ route like:
        return 'Hello, world!\n'
 
 You could approach this function from a unit test point of view and write a simple
-check to make sure it returns the correct string. In ``test_hello_flask.py`` you
+check to make sure it returns the correct string. In ``test_hello_fastapi.py`` you
 would have lines of code similar to:
 
 .. code-block:: python3
@@ -186,7 +186,7 @@ need to launch the test container on the same network using a flag:
    rootdir: /app
    collected 2 items
 
-   test_hello_flask.py ..                                                   [100%]
+   test_hello_fastapi.py ..                                                   [100%]
 
    ============================== 2 passed in 0.20s ===============================
 
@@ -202,19 +202,19 @@ something similar to the following:
    import os
    from fast_api import hello
 
-   _flask_ip=os.environ.get('FLASK_IP')
+   _fast_api_ip=os.environ.get('FAST_API_IP')
 
    def test_hello():                      
      assert (hello()) == 'Hello, world!\n'
 
    def test_integration_hello():
-       response = requests.get(f'http://{_flask_ip}:5000/hello')
+       response = requests.get(f'http://{_fast_api_ip}:5000/hello')
        assert response.status_code == 200
 
 QUESTIONS
 ~~~~~~~~~
 
-* How do we set the value of ``FLASK_IP`` in the environment?
+* How do we set the value of ``FAST_API_IP`` in the environment?
 * What should the value be set to?
 
 

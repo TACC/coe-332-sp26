@@ -5,7 +5,7 @@ Up to this point, we have been looking at single-container applications - small
 units of code that are containerized, executed *ad hoc* to generate or read a
 JSON file, then exit on completion. But what if we want to do something more
 complex? For example, what if our goal is to orchestrate a multi-container
-application consisting of, e.g., a Flask app, a database, a message queue, an
+application consisting of, e.g., a Fask  app, a database, a message queue, an
 authentication service, and more.
 
 **Docker compose** is a tool for managing multi-container applications. A YAML

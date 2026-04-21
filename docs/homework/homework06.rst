@@ -179,6 +179,6 @@ Additional Resources
 --------------------
 
 * `HGNC Data Set <https://www.genenames.org/download/archive/>`_
-* `Unit on Docker Compose <../unit07/redis_and_flask.html#docker-compose>`_
+* `Unit on Docker Compose <../unit07/redis_and_fastapi.html#docker-compose>`_
 * Please find us in the class Slack channel if you have any questions!
 
