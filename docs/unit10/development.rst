@@ -30,7 +30,7 @@ An example file organization scheme for developing this API may look like:
 
    my-api/
    ├── data
-   │   └── .gitcanary
+   │   └── .gitkeep
    ├── docker-compose.yml
    ├── Dockerfile
    ├── requirements.txt
@@ -47,7 +47,7 @@ An example file organization scheme for developing this API may look like:
 In this example, the ``data/`` subfolder is mounted inside a Redis container. All
 the data is captured in regular intervals in ``dump.rdb`` for testing purposes only
 (real end users will not see this copy of the data). It is common practice to put 
-an empty file like ``.gitcanary`` in a folder so that you can commit it to a Git
+an empty file like ``.gitkeep`` in a folder so that you can commit it to a Git
 repo.
 
 The Dockerfile, in this case, containerizes all source code and tests scripts

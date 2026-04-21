@@ -28,7 +28,7 @@ something similar to the following:
 
    my-api/
    ├── data
-   │   └── .gitcanary
+   │   └── .gitkeep
    ├── docker-compose.yml
    ├── Dockerfile
    ├── kubernetes

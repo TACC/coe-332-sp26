@@ -71,7 +71,7 @@ into a subdirectory similar to:
 
    my-api/
    ├── data
-   │   └── .gitcanary
+   │   └── .gitkeep
    ├── docker-compose.yml
    ├── Dockerfile
    ├── kubernetes
